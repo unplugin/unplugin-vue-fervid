@@ -57,6 +57,7 @@
     }
   },
   "dependencies": {
+    "@fervid/napi": "^0.1.4",
     "debug": "^4.3.4",
     "unplugin": "~1.6.0",
     "vite": "^5.0.11"
