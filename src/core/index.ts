@@ -30,7 +30,7 @@ import type {
 // eslint-disable-next-line import/no-duplicates
 import type * as _compiler from 'vue/compiler-sfc'
 
-import { compileSync } from '@fervid/napi'
+// import { compileSync } from '@fervid/napi'
 
 export { parseVueRequest, type VueQuery } from './utils/query'
 
