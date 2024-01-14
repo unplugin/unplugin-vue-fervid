@@ -1,2 +1,6 @@
 # unplugin-vue-fervid
-✨ Transform Vue 3 SFC to JavaScript. Vue compiler written in Rust. Supports Vite, esbuild, Rollup, Webpack and more.
+
+Use a compiler written in rust to Transform Vue 3 SFC to JavaScript
+
+> [!IMPORTANT]
+> Working in Progress.  May be break changes in the future. The final implementation goal should be consistent with the vue compiler behavior
