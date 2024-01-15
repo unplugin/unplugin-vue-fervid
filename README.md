@@ -6,3 +6,6 @@ Due to the need to consider `performance` and `compatibility` issues, `fervid` n
 > [!IMPORTANT]
 > 🚧 Working in Progress. 
   May be break changes in the future. The final implementation goal should be consistent with the vue compiler behavior
+
+- demo: you can experience it in `example/webpack` in the repository.
+- playground: [Fervid Playground](https://phoenix-ru.github.io/fervid/) 
