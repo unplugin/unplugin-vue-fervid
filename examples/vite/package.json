@@ -1,12 +1,17 @@
 {
-  "name": "vite",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "private": true,
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "dependencies": {
+    "vue": "^3.4.5"
+  },
+  "devDependencies": {
+    "unplugin-vue-fervid": "workspace:*",
+    "vite": "^5.0.11",
+    "vite-plugin-inspect": "^0.8.1"
+  }
 }
