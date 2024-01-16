@@ -49,7 +49,8 @@
     "release": "bumpp",
     "lint": "eslint --max-warnings 0 .",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "pnpm run build"
+    "prepublishOnly": "pnpm run build",
+    "clean": "rimraf node_modules **/*/node_modules"
   },
   "peerDependenciesMeta": {
     "vite": {
