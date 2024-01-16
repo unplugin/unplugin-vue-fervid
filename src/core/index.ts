@@ -7,6 +7,7 @@ import {
 } from 'unplugin'
 import { computed, shallowRef } from 'vue'
 import { resolveCompiler } from '../core/compiler'
+import { Compiler } from '@fervid/napi'
 import { getResolvedScript, typeDepToSFCMap } from '../core/script'
 import { transformMain } from '../core/main'
 import { transformTemplateAsModule } from '../core/template'
@@ -136,6 +137,10 @@ function resolveOptions(rawOptions: Options): ResolvedOptions {
 export const plugin = createUnplugin<Options | undefined, false>(
   (rawOptions = {}, meta) => {
     const options = shallowRef(resolveOptions(rawOptions))
+    // const compiler = new Compiler({
+    //   isProduction: true
+    // })
+    // console.log(Compiler);
 
     const filter = computed(() =>
       createFilter(options.value.include, options.value.exclude),
