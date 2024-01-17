@@ -1,6 +1,7 @@
 {
   "private": true,
   "type": "module",
+  "author": "三咲智子 <sxzz@sxzz.moe>",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

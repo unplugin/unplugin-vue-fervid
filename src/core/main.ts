@@ -44,6 +44,7 @@ export async function transformMain(
   const { devServer, isProduction, devToolsEnabled } = options
 
   const prevDescriptor = getPrevDescriptor(filename)
+  
   const { descriptor, errors } = createDescriptor(filename, code, options)
 
   if (fs.existsSync(filename)) {

@@ -22,20 +22,29 @@ const prevCache = new Map<string, SFCDescriptor | undefined>()
 export function createDescriptor(
   filename: string,
   source: string,
-  { root, isProduction, sourceMap, compiler, template }: ResolvedOptions,
+  { root, isProduction, sourceMap, compiler, fervidCompiler, template }: ResolvedOptions,
   hmr = false,
 ): SFCParseResult {
+  const startTime = performance.now();
+  fervidCompiler.compileSync(source);
+  const endTime = performance.now();
+  const duration = endTime - startTime;
+  console.log(`fervid ${duration}ms`);
+  const startTime2 = performance.now();
   const { descriptor, errors } = compiler.parse(source, {
     filename,
     sourceMap,
     templateParseOptions: template?.compilerOptions,
   })
+  const endTime2 = performance.now();
+  const duration2 = endTime2 - startTime2;
+  console.log(`vue-compiler-sfc ${duration2}ms`);
 
   // ensure the path is normalized in a way that is consistent inside
   // project (relative to root) and on different systems.
   const normalizedPath = slash(path.normalize(path.relative(root, filename)))
   descriptor.id = getHash(normalizedPath + (isProduction ? source : ''))
-  ;(hmr ? hmrCache : cache).set(filename, descriptor)
+    ; (hmr ? hmrCache : cache).set(filename, descriptor)
   return { descriptor, errors }
 }
 

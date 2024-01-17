@@ -6,13 +6,12 @@ import {
   createUnplugin,
 } from 'unplugin'
 import { computed, shallowRef } from 'vue'
-import { resolveCompiler } from '../core/compiler'
-import { Compiler } from '@fervid/napi'
-import { getResolvedScript, typeDepToSFCMap } from '../core/script'
-import { transformMain } from '../core/main'
-import { transformTemplateAsModule } from '../core/template'
-import { transformStyle } from '../core/style'
-import { EXPORT_HELPER_ID, helperCode } from '../core/helper'
+import { resolveCompiler } from './compiler'
+import { getResolvedScript, typeDepToSFCMap } from './script'
+import { transformMain } from './main'
+import { transformTemplateAsModule } from './template'
+import { transformStyle } from './style'
+import { EXPORT_HELPER_ID, helperCode } from './helper'
 import { version } from '../../package.json'
 import {
   getDescriptor,
@@ -30,6 +29,7 @@ import type {
 } from 'vue/compiler-sfc'
 // eslint-disable-next-line import/no-duplicates
 import type * as _compiler from 'vue/compiler-sfc'
+import { Compiler } from '@fervid/napi'
 
 export { parseVueRequest, type VueQuery } from './utils/query'
 
@@ -85,6 +85,7 @@ export interface Options {
    */
   compiler?: typeof _compiler
 
+  fervidCompiler?: any
   /**
    * @default true
    */
@@ -135,10 +136,6 @@ function resolveOptions(rawOptions: Options): ResolvedOptions {
 export const plugin = createUnplugin<Options | undefined, false>(
   (rawOptions = {}, meta) => {
     const options = shallowRef(resolveOptions(rawOptions))
-    const compiler = new Compiler({
-      isProduction: true
-    })
-    console.log(compiler.compileAsync);
 
     const filter = computed(() =>
       createFilter(options.value.include, options.value.exclude),
@@ -212,6 +209,7 @@ export const plugin = createUnplugin<Options | undefined, false>(
             cssDevSourcemap: config.css?.devSourcemap ?? false,
             isProduction: config.isProduction,
             compiler: options.value.compiler || resolveCompiler(config.root),
+            fervidCompiler: options.value.compiler || new Compiler({ isProduction: config.isProduction }),
             devToolsEnabled:
               !!config.define!.__VUE_PROD_DEVTOOLS__ || !config.isProduction,
           }
@@ -315,7 +313,7 @@ export const plugin = createUnplugin<Options | undefined, false>(
           // sub block request
           const descriptor = query.src
             ? getSrcDescriptor(filename, query) ||
-              getTempSrcDescriptor(filename, query)
+            getTempSrcDescriptor(filename, query)
             : getDescriptor(filename, options.value)!
 
           if (query.type === 'template') {
@@ -342,4 +340,3 @@ export const plugin = createUnplugin<Options | undefined, false>(
     }
   },
 )
-
