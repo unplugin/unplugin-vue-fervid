@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@fervid/napi':
-        specifier: ^0.2.0
-        version: 0.2.0
+        specifier: ^0.2.1
+        version: 0.2.1
       debug:
         specifier: ^4.3.4
         version: 4.3.4
@@ -575,8 +575,17 @@ packages:
       core-js: 3.35.0
     dev: true
 
-  /@fervid/napi-darwin-x64@0.2.0:
-    resolution: {integrity: sha512-/7lxfXFVp4FWU5HfxtcJXIZzBER/KrNTIo7ZG/LT5KCfyK3JUJT7FZmwkBoLQBGkTSv7YViB8MYsUAm/nPfLNA==}
+  /@fervid/napi-darwin-arm64@0.2.1:
+    resolution: {integrity: sha512-3rhj6Xhq+WFlr6EdVYjqda+AA0PI8YDvIVws7h8SGlEXXR919FBSyMqljQd0CtAAkm9Ks5XwB5dwCI9HBZDZmw==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@fervid/napi-darwin-x64@0.2.1:
+    resolution: {integrity: sha512-OSL0olx9JPInSavH8ocpiD6bnKYaHAJu2t2E912vIdocrtzCTtzJjk2vrxKb9P6XDYt2J4GSifElAQ4hhsCMNQ==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [darwin]
@@ -584,8 +593,8 @@ packages:
     dev: false
     optional: true
 
-  /@fervid/napi-linux-x64-gnu@0.2.0:
-    resolution: {integrity: sha512-pb+rDY+cVPGllErekqY+E4RxZo8Wn96BL2sIGXW25WF0ARdPSq8cTOBYitq1lkXv9/gDGrJKN0CEEkbOWDN8SQ==}
+  /@fervid/napi-linux-x64-gnu@0.2.1:
+    resolution: {integrity: sha512-XQvsjnjvMjkASHg1PLvrakS4lIG7tprnWY3xxxb/iPYh46yYocl2fwz9duEOv19oIvppwBSBcv5YWGqKaFIw0g==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [linux]
@@ -593,8 +602,17 @@ packages:
     dev: false
     optional: true
 
-  /@fervid/napi-win32-x64-msvc@0.2.0:
-    resolution: {integrity: sha512-ck2eRUkIFWB1diuWTQsqErCOb6v194Y3mTD1ExpchNdkodPc4dXWDzuSeP4kxEoViNFyxars3HLsZGwru4qn+Q==}
+  /@fervid/napi-linux-x64-musl@0.2.1:
+    resolution: {integrity: sha512-gbZ7UNqtCykg7MuJvI/B/dLB15RtavGtt+AwhXoShm2nwJ2paI1SjYb5AHVTsl93NCj5ETUvZDx0EDvZETu3Aw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+    requiresBuild: true
+    dev: false
+    optional: true
+
+  /@fervid/napi-win32-x64-msvc@0.2.1:
+    resolution: {integrity: sha512-ZRaQcKhdRDiyGat00DoHULP+boCa0lp8146r8XP1k1rO0xra7ArD/b+PO2PGayJAT86LcvYRtwK+JWy+pBoELA==}
     engines: {node: '>= 10'}
     cpu: [x64]
     os: [win32]
@@ -602,13 +620,15 @@ packages:
     dev: false
     optional: true
 
-  /@fervid/napi@0.2.0:
-    resolution: {integrity: sha512-rwBSx7xCsCXOcW+RAnrYm1YFct3vZkTAsatFWDx7ZspnUfjONlv5o7wEwMtb3qTEUPB7PMWDfB8gE3v2o7uoLQ==}
+  /@fervid/napi@0.2.1:
+    resolution: {integrity: sha512-MBS2Y1jnC7FGRMhpdPioaQ6i881xp+dle85ZfBkQABzHAvZRI262eDZTWfrs7kH8e16lOw04Tf9A2R/yWbG4XA==}
     engines: {node: '>= 10'}
     optionalDependencies:
-      '@fervid/napi-darwin-x64': 0.2.0
-      '@fervid/napi-linux-x64-gnu': 0.2.0
-      '@fervid/napi-win32-x64-msvc': 0.2.0
+      '@fervid/napi-darwin-arm64': 0.2.1
+      '@fervid/napi-darwin-x64': 0.2.1
+      '@fervid/napi-linux-x64-gnu': 0.2.1
+      '@fervid/napi-linux-x64-musl': 0.2.1
+      '@fervid/napi-win32-x64-msvc': 0.2.1
     dev: false
 
   /@humanwhocodes/config-array@0.11.14:

@@ -1,17 +1,18 @@
-import { createUnplugin } from "unplugin";
-import { compileSync } from "@fervid/napi";
-import VirtualModulesPlugin from "webpack-virtual-modules";
+import { createUnplugin } from 'unplugin'
+import { Compiler } from '@fervid/napi'
+import VirtualModulesPlugin from 'webpack-virtual-modules'
 
-const plugin = createUnplugin(() => {
-  // const isProd = "production";
-  const isProd = true;
-  const hmr = false
-  const shouldAddHmr = hmr;
-  // const bundler = meta.framework;
-  const bundler = 'webpack'
+const unplugin = createUnplugin(({ mode = 'production', hmr = false }, meta) => {
+  const isProduction = mode === 'production'
+  const shouldAddHmr = hmr
+  const bundler = meta.framework
+
+  const compiler = new Compiler({
+    isProduction
+  })
 
   /** @type {VirtualModulesPlugin | undefined} */
-  let vfs = undefined;
+  let vfs = undefined
 
   /**
    * Adds a file to Virtual File System.
@@ -20,58 +21,58 @@ const plugin = createUnplugin(() => {
    * @param {string} content
    */
   function addVirtualFile(id, content) {
-    if (bundler === "webpack" && vfs) {
-      vfs.writeModule(id, content);
+    if (bundler === 'webpack' && vfs) {
+      vfs.writeModule(id, content)
     }
   }
 
   return {
-    name: "unplugin-fervid",
+    name: 'unplugin-fervid',
 
     transformInclude(id) {
-      return id.endsWith(".vue");
+      return id.endsWith('.vue')
     },
 
     transform(code, id) {
-      const compileResult = compileSync(code, { isProd });
+      const compileResult = compiler.compileSync(code)
 
       /** @type {string[]} */
-      const assetImports = [];
+      const assetImports = []
       for (const style of compileResult.styles) {
-        const idx = assetImports.length;
+        const idx = assetImports.length
 
         // e.g. `input.vue` -> `input.vue.2.css`
-        const newId = `${id}.${idx}.${style.lang}`;
-        const imported = `import '${newId}'`;
-        assetImports.push(imported);
-        addVirtualFile(newId, style.code);
+        const newId = `${id}.${idx}.${style.lang}`
+        const imported = `import '${newId}'`
+        assetImports.push(imported)
+        addVirtualFile(newId, style.code)
       }
 
-      const base = assetImports.join("\n") + "\n" + compileResult.code;
+      const base = assetImports.join('\n') + '\n' + compileResult.code
       if (!shouldAddHmr) {
-        return base;
+        return base
       }
 
-      const hmr = bundler === "webpack" ? webpackHmr(id) : viteHmr(id);
+      const hmr = bundler === 'webpack'
+        ? webpackHmr(id)
+        : viteHmr(id)
 
-      return base + hmr;
+      return base + hmr
     },
 
     webpack(compiler) {
       // Find a VirtualModulesPlugin or create a new one
-      vfs = compiler.options.plugins.find(
-        (p) => p instanceof VirtualModulesPlugin
-      );
+      vfs = compiler.options.plugins.find(p => p instanceof VirtualModulesPlugin)
       if (!vfs) {
-        vfs = new VirtualModulesPlugin();
-        compiler.options.plugins.push(vfs);
+        vfs = new VirtualModulesPlugin()
+        compiler.options.plugins.push(vfs)
       }
-    },
-  };
-});
+    }
+  }
+})
 
 /** @param {string} id */
-function webpackHmr(id) {
+function webpackHmr (id) {
   return `
 if (import.meta.webpackHot) {
   __WEBPACK_DEFAULT_EXPORT__.__hmrId = '${id}'
@@ -80,15 +81,15 @@ if (import.meta.webpackHot) {
   if (!api.createRecord('${id}', __WEBPACK_DEFAULT_EXPORT__)) {
     api.reload('${id}', __WEBPACK_DEFAULT_EXPORT__)
   }
-}`;
-  // module.hot.accept('${id}', () => {
-  // api.rerender('${id}', __WEBPACK_DEFAULT_EXPORT__.render)
-  // })
+}`
+// module.hot.accept('${id}', () => {
+// api.rerender('${id}', __WEBPACK_DEFAULT_EXPORT__.render)
+// })
 }
 
 // TODO This is untested
 /** @param {string} id */
-function viteHmr(id) {
+function viteHmr (id) {
   return `
 if (import.meta.hot) {
   import.meta.hot.accept((newModule) => {
@@ -101,12 +102,11 @@ if (import.meta.hot) {
       api.reload('${id}', newModule)
     }
   })
-}`;
+}`
 }
 
-export const vitePlugin = plugin.vite;
-export const rollupPlugin = plugin.rollup;
-export const webpackPlugin = plugin.webpack;
-export const rspackPlugin = plugin.rspack;
-export const esbuildPlugin = plugin.esbuild;
-export { plugin };
+export const vitePlugin = unplugin.vite
+export const rollupPlugin = unplugin.rollup
+export const webpackPlugin = unplugin.webpack
+export const rspackPlugin = unplugin.rspack
+export const esbuildPlugin = unplugin.esbuild

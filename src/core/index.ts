@@ -31,8 +31,6 @@ import type {
 // eslint-disable-next-line import/no-duplicates
 import type * as _compiler from 'vue/compiler-sfc'
 
-// import { compileSync } from '@fervid/napi'
-
 export { parseVueRequest, type VueQuery } from './utils/query'
 
 export interface Options {
@@ -137,10 +135,10 @@ function resolveOptions(rawOptions: Options): ResolvedOptions {
 export const plugin = createUnplugin<Options | undefined, false>(
   (rawOptions = {}, meta) => {
     const options = shallowRef(resolveOptions(rawOptions))
-    // const compiler = new Compiler({
-    //   isProduction: true
-    // })
-    // console.log(Compiler);
+    const compiler = new Compiler({
+      isProduction: true
+    })
+    console.log(compiler.compileAsync);
 
     const filter = computed(() =>
       createFilter(options.value.include, options.value.exclude),
