@@ -24,6 +24,10 @@
       "require": "./dist/rollup.cjs",
       "import": "./dist/rollup.js"
     },
+    "./farm": {
+      "require": "./dist/farm.cjs",
+      "import": "./dist/farm.js"
+    },
     "./esbuild": {
       "require": "./dist/esbuild.cjs",
       "import": "./dist/esbuild.js"

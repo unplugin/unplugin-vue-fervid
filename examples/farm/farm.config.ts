@@ -1,9 +1,9 @@
 import { defineConfig } from "@farmfe/core";
-import Vue from "unplugin-vue-fervid/vite";
+import Vue from "unplugin-vue-fervid/farm";
 
 export default defineConfig({
   compilation: {
     persistentCache: false
   },
-  vitePlugins: [Vue()],
+  plugins: [Vue()],
 });

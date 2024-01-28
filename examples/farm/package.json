@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "unplugin-vue-fervid": "workspace:*",
-    "@farmfe/core": "0.15.4",
+    "@farmfe/core": "0.15.9",
     "@farmfe/cli": "0.6.0"
   }
 }
