@@ -1,4 +1,4 @@
-# unplugin-vue-fervid
+# unplugin-vue-fervid WIP
 
 #### Use [fervid](https://github.com/phoenix-ru/fervid) to Transform Vue 3 SFC to JavaScript
 
