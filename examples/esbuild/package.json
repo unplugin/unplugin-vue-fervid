@@ -1,0 +1,19 @@
+{
+  "private": true,
+  "type": "module",
+  "author": "三咲智子 <sxzz@sxzz.moe>",
+  "scripts": {
+    "build": "rimraf dist && node build.js",
+    "preview": "serve dist"
+  },
+  "dependencies": {
+    "vue": "^3.5.13"
+  },
+  "devDependencies": {
+    "@chialab/esbuild-plugin-html": "^0.18.2",
+    "esbuild": "^0.24.0",
+    "sass": "^1.81.0",
+    "serve": "^14.2.4",
+    "unplugin-vue": "workspace:*"
+  }
+}
