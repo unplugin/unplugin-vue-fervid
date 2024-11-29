@@ -1,5 +1,6 @@
-import Vue from 'unplugin-vue-fervid/webpack'
+import process from 'node:process'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
+import Vue from 'unplugin-vue/webpack'
 import type { Configuration } from 'webpack'
 
 const config: Configuration = {
@@ -12,8 +13,13 @@ const config: Configuration = {
       {
         enforce: 'post',
         test: /\.m?ts$/,
-        exclude: /(node_modules)/,
+        exclude: /node_modules/,
         use: { loader: 'swc-loader' },
+      },
+      {
+        test: /\.css$/,
+        enforce: 'post',
+        use: ['style-loader', 'css-loader'],
       },
     ],
   },

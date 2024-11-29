@@ -1,8 +1,4 @@
 {
-  "cSpell.words": [
-    "erkelost",
-    "jridgewell",
-    "napi",
-    "typecheck"
-  ]
+  "editor.formatOnSave": true,
+  "cSpell.words": ["erkelost", "jridgewell", "napi", "typecheck"]
 }
