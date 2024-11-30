@@ -1,6 +1,5 @@
 {
   "private": true,
-  "author": "三咲智子 <sxzz@sxzz.moe>",
   "scripts": {
     "serve": "MODE=development webpack serve",
     "build": "rimraf dist && MODE=production webpack build",
@@ -18,7 +17,7 @@
     "style-loader": "^4.0.0",
     "sucrase": "^3.35.0",
     "swc-loader": "^0.2.6",
-    "unplugin-vue": "workspace:*",
+    "unplugin-vue-fervid": "workspace:*",
     "webpack": "^5.96.1",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "^5.1.0"

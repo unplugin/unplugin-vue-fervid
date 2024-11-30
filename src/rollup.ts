@@ -1,3 +1,3 @@
-import unplugin from '.'
+import { plugin } from './core/index-old'
 
-export default unplugin.rollup
+export default plugin.rollup as typeof plugin.rollup

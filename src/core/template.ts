@@ -1,14 +1,14 @@
-import path from 'node:path'
-import slash from 'slash'
-import { getResolvedScript, resolveScript } from './script'
-import { createRollupError } from './utils/error'
+import path from "node:path";
+import slash from "slash";
+import { getResolvedScript, resolveScript } from "./script";
+import { createError } from "./utils/error";
+import type { Context, ResolvedOptions } from "./index-old";
 import type {
   CompilerOptions,
   SFCDescriptor,
   SFCTemplateCompileOptions,
   SFCTemplateCompileResults,
-} from 'vue/compiler-sfc'
-import type { Context, ResolvedOptions } from '.'
+} from "vue/compiler-sfc";
 
 // eslint-disable-next-line require-await
 export async function transformTemplateAsModule(
@@ -19,8 +19,8 @@ export async function transformTemplateAsModule(
   ssr: boolean,
   customElement: boolean,
 ): Promise<{
-  code: string
-  map: any
+  code: string;
+  map: any;
 }> {
   const result = compile(
     code,
@@ -29,9 +29,9 @@ export async function transformTemplateAsModule(
     pluginContext,
     ssr,
     customElement,
-  )
+  );
 
-  let returnCode = result.code
+  let returnCode = result.code;
   if (
     options.devServer &&
     options.devServer.config.server.hmr !== false &&
@@ -40,13 +40,13 @@ export async function transformTemplateAsModule(
   ) {
     returnCode += `\nimport.meta.hot.accept(({ render }) => {
       __VUE_HMR_RUNTIME__.rerender(${JSON.stringify(descriptor.id)}, render)
-    })`
+    })`;
   }
 
   return {
     code: returnCode,
     map: result.map,
-  }
+  };
 }
 
 /**
@@ -67,14 +67,14 @@ export function transformTemplateInMain(
     pluginContext,
     ssr,
     customElement,
-  )
+  );
   return {
     ...result,
     code: result.code.replace(
       /\nexport (function|const) (render|ssrRender)/,
-      '\n$1 _sfc_$2',
+      "\n$1 _sfc_$2",
     ),
-  }
+  };
 }
 
 export function compile(
@@ -85,27 +85,23 @@ export function compile(
   ssr: boolean,
   customElement: boolean,
 ) {
-  const filename = descriptor.filename
+  const filename = descriptor.filename;
   resolveScript(
     pluginContext.framework,
     descriptor,
     options,
     ssr,
     customElement,
-  )
+  );
   const result = options.compiler.compileTemplate({
     ...resolveTemplateCompilerOptions(descriptor, options, ssr)!,
     source: code,
-  })
+  });
 
   if (result.errors.length > 0) {
     result.errors.forEach((error) =>
-      pluginContext.error(
-        typeof error === 'string'
-          ? { id: filename, message: error }
-          : createRollupError(filename, error),
-      ),
-    )
+      pluginContext.error(createError(filename, error)),
+    );
   }
 
   if (result.tips.length > 0) {
@@ -114,78 +110,80 @@ export function compile(
         id: filename,
         message: tip,
       }),
-    )
+    );
   }
 
-  return result
+  return result;
 }
 
 export function resolveTemplateCompilerOptions(
   descriptor: SFCDescriptor,
   options: ResolvedOptions,
   ssr: boolean,
-): Omit<SFCTemplateCompileOptions, 'source'> | undefined {
-  const block = descriptor.template
+): Omit<SFCTemplateCompileOptions, "source"> | undefined {
+  const block = descriptor.template;
   if (!block) {
-    return
+    return;
   }
-  const resolvedScript = getResolvedScript(descriptor, ssr)
-  const hasScoped = descriptor.styles.some((s) => s.scoped)
-  const { id, filename, cssVars } = descriptor
+  const resolvedScript = getResolvedScript(descriptor, ssr);
+  const hasScoped = descriptor.styles.some((s) => s.scoped);
+  const { id, filename, cssVars } = descriptor;
 
-  let transformAssetUrls = options.template?.transformAssetUrls
+  let transformAssetUrls = options.template?.transformAssetUrls;
   // compiler-sfc should export `AssetURLOptions`
-  let assetUrlOptions //: AssetURLOptions | undefined
-  if (options.devServer) {
+  let assetUrlOptions; //: AssetURLOptions | undefined
+  if (transformAssetUrls === false) {
+    // if explicitly disabled, let assetUrlOptions be undefined
+  } else if (options.devServer) {
     // during dev, inject vite base so that compiler-sfc can transform
     // relative paths directly to absolute paths without incurring an extra import
     // request
     if (filename.startsWith(options.root)) {
-      const devBase = options.devServer.config.base
+      const devBase = options.devServer.config.base;
       assetUrlOptions = {
         base:
-          (options.devServer.config.server?.origin ?? '') +
+          (options.devServer.config.server?.origin ?? "") +
           devBase +
           slash(path.relative(options.root, path.dirname(filename))),
         includeAbsolute: !!devBase,
-      }
+      };
     }
-  } else if (transformAssetUrls !== false) {
+  } else {
     // build: force all asset urls into import requests so that they go through
     // the assets plugin for asset registration
     assetUrlOptions = {
       includeAbsolute: true,
-    }
+    };
   }
 
-  if (transformAssetUrls && typeof transformAssetUrls === 'object') {
+  if (transformAssetUrls && typeof transformAssetUrls === "object") {
     // presence of array fields means this is raw tags config
     if (Object.values(transformAssetUrls).some((val) => Array.isArray(val))) {
       transformAssetUrls = {
         ...assetUrlOptions,
         tags: transformAssetUrls as any,
-      }
+      };
     } else {
-      transformAssetUrls = { ...assetUrlOptions, ...transformAssetUrls }
+      transformAssetUrls = { ...assetUrlOptions, ...transformAssetUrls };
     }
   } else {
-    transformAssetUrls = assetUrlOptions
+    transformAssetUrls = assetUrlOptions;
   }
 
-  let preprocessOptions = block.lang && options.template?.preprocessOptions
-  if (block.lang === 'pug') {
+  let preprocessOptions = block.lang && options.template?.preprocessOptions;
+  if (block.lang === "pug") {
     preprocessOptions = {
-      doctype: 'html',
+      doctype: "html",
       ...preprocessOptions,
-    }
+    };
   }
 
   // if using TS, support TS syntax in template expressions
-  const expressionPlugins: CompilerOptions['expressionPlugins'] =
-    options.template?.compilerOptions?.expressionPlugins || []
-  const lang = descriptor.scriptSetup?.lang || descriptor.script?.lang
-  if (lang && /tsx?$/.test(lang) && !expressionPlugins.includes('typescript')) {
-    expressionPlugins.push('typescript')
+  const expressionPlugins: CompilerOptions["expressionPlugins"] =
+    options.template?.compilerOptions?.expressionPlugins || [];
+  const lang = descriptor.scriptSetup?.lang || descriptor.script?.lang;
+  if (lang && /tsx?$/.test(lang) && !expressionPlugins.includes("typescript")) {
+    expressionPlugins.push("typescript");
   }
 
   return {
@@ -202,7 +200,7 @@ export function resolveTemplateCompilerOptions(
     ssr,
     ssrCssVars: cssVars,
     transformAssetUrls,
-    preprocessLang: block.lang === 'html' ? undefined : block.lang,
+    preprocessLang: block.lang === "html" ? undefined : block.lang,
     preprocessOptions,
     compilerOptions: {
       ...options.template?.compilerOptions,
@@ -211,7 +209,7 @@ export function resolveTemplateCompilerOptions(
       expressionPlugins,
       sourceMap: options.sourceMap,
     },
-  }
+  };
 }
 
 /**
@@ -220,10 +218,10 @@ export function resolveTemplateCompilerOptions(
  */
 function canReuseAST(version: string | undefined) {
   if (version) {
-    const [, minor, patch] = version.split('.').map(Number)
+    const [, minor, patch] = version.split(".").map(Number);
     if (minor >= 4 && patch >= 3) {
-      return true
+      return true;
     }
   }
-  return false
+  return false;
 }

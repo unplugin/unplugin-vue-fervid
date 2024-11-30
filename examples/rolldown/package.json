@@ -1,7 +1,6 @@
 {
   "private": true,
   "type": "module",
-  "author": "三咲智子 <sxzz@sxzz.moe>",
   "scripts": {
     "build": "node build.js",
     "preview": "serve"
@@ -12,6 +11,6 @@
   "devDependencies": {
     "rolldown": "^0.14.0",
     "serve": "^14.2.4",
-    "unplugin-vue": "workspace:*"
+    "unplugin-vue-fervid": "workspace:*"
   }
 }

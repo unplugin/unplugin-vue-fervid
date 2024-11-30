@@ -1,123 +1,199 @@
-import fs from 'node:fs'
-import { type ViteDevServer, createFilter, normalizePath } from 'vite'
+import fs from "node:fs";
+import process from "node:process";
+import { computed, shallowRef } from "@vue/reactivity";
 import {
+  createUnplugin,
   type UnpluginContext,
   type UnpluginContextMeta,
-  createUnplugin,
-} from 'unplugin'
-import { computed, shallowRef } from 'vue'
-import { resolveCompiler } from './compiler'
-import { getResolvedScript, typeDepToSFCMap } from './script'
-import { transformMain } from './main'
-import { transformTemplateAsModule } from './template'
-import { transformStyle } from './style'
-import { EXPORT_HELPER_ID, helperCode } from './helper'
-import { version } from '../../package.json'
+} from "unplugin";
+import { createFilter, normalizePath, type ViteDevServer } from "vite";
+import { version } from "../../package.json";
+import { resolveCompiler } from "../core/compiler";
+import { EXPORT_HELPER_ID, helperCode } from "../core/helper";
+import { transformMain } from "../core/main";
+import {
+  clearScriptCache,
+  resolveScript,
+  typeDepToSFCMap,
+} from "../core/script";
+import { transformStyle } from "../core/style";
+import { transformTemplateAsModule } from "../core/template";
+import { handleHotUpdate, handleTypeDepChange } from "./handleHotUpdate";
 import {
   getDescriptor,
   getSrcDescriptor,
   getTempSrcDescriptor,
-} from './utils/descriptorCache'
-import { parseVueRequest } from './utils/query'
-import { handleHotUpdate, handleTypeDepChange } from './handleHotUpdate'
+} from "./utils/descriptorCache";
+import { parseVueRequest } from "./utils/query";
 import type {
   SFCBlock,
   SFCScriptCompileOptions,
   SFCStyleCompileOptions,
   SFCTemplateCompileOptions,
-  // eslint-disable-next-line import/no-duplicates
-} from 'vue/compiler-sfc'
-// eslint-disable-next-line import/no-duplicates
-import type * as _compiler from 'vue/compiler-sfc'
-import { Compiler } from '@fervid/napi'
+} from "vue/compiler-sfc";
+import type * as _compiler from "vue/compiler-sfc";
 
-export { parseVueRequest, type VueQuery } from './utils/query'
+export { parseVueRequest, type VueQuery } from "./utils/query";
 
 export interface Options {
-  include?: string | RegExp | (string | RegExp)[]
-  exclude?: string | RegExp | (string | RegExp)[]
+  include?: string | RegExp | (string | RegExp)[];
+  exclude?: string | RegExp | (string | RegExp)[];
 
-  isProduction?: boolean
-  ssr?: boolean
-  sourceMap?: boolean
-  root?: string
+  isProduction?: boolean;
+  ssr?: boolean;
+  sourceMap?: boolean;
+  root?: string;
 
   // options to pass on to vue/compiler-sfc
   script?: Partial<
-    Pick<
+    Omit<
       SFCScriptCompileOptions,
-      | 'babelParserPlugins'
-      | 'globalTypeFiles'
-      | 'propsDestructure'
-      | 'fs'
-      | 'hoistStatic'
+      | "id"
+      | "isProd"
+      | "inlineTemplate"
+      | "templateOptions"
+      | "sourceMap"
+      | "genDefaultAs"
+      | "customElement"
+      | "defineModel"
+      | "propsDestructure"
     >
   > & {
     /**
      * @deprecated defineModel is now a stable feature and always enabled if
      * using Vue 3.4 or above.
      */
-    defineModel?: boolean
-  }
+    defineModel?: boolean;
+    /**
+     * @deprecated moved to `features.propsDestructure`.
+     */
+    propsDestructure?: boolean;
+  };
   template?: Partial<
-    Pick<
+    Omit<
       SFCTemplateCompileOptions,
-      | 'compiler'
-      | 'compilerOptions'
-      | 'preprocessOptions'
-      | 'preprocessCustomRequire'
-      | 'transformAssetUrls'
+      | "id"
+      | "source"
+      | "ast"
+      | "filename"
+      | "scoped"
+      | "slotted"
+      | "isProd"
+      | "inMap"
+      | "ssr"
+      | "ssrCssVars"
+      | "preprocessLang"
     >
-  >
-  style?: Partial<Pick<SFCStyleCompileOptions, 'trim'>>
+  >;
+  style?: Partial<
+    Omit<
+      SFCStyleCompileOptions,
+      | "filename"
+      | "id"
+      | "isProd"
+      | "source"
+      | "scoped"
+      | "cssDevSourcemap"
+      | "postcssOptions"
+      | "map"
+      | "postcssPlugins"
+      | "preprocessCustomRequire"
+      | "preprocessLang"
+      | "preprocessOptions"
+    >
+  >;
 
   /**
-   * Transform Vue SFCs into custom elements.
-   * - `true`: all `*.vue` imports are converted into custom elements
-   * - `string | RegExp`: matched files are converted into custom elements
-   *
-   * @default /\.ce\.vue$/
+   * @deprecated moved to `features.customElement`.
    */
-  customElement?: boolean | string | RegExp | (string | RegExp)[]
+  customElement?: boolean | string | RegExp | (string | RegExp)[];
 
   /**
    * Use custom compiler-sfc instance. Can be used to force a specific version.
    */
-  compiler?: typeof _compiler
+  compiler?: typeof _compiler;
 
-  fervidCompiler?: any
   /**
    * @default true
    */
-  inlineTemplate?: boolean
+  inlineTemplate?: boolean;
+
+  features?: {
+    optionsAPI?: boolean;
+    prodDevtools?: boolean;
+    prodHydrationMismatchDetails?: boolean;
+    /**
+     * Enable reactive destructure for `defineProps`.
+     * - Available in Vue 3.4 and later.
+     * - Defaults to true in Vue 3.5+
+     * - Defaults to false in Vue 3.4 (**experimental**)
+     */
+    propsDestructure?: boolean;
+    /**
+     * Transform Vue SFCs into custom elements.
+     * - `true`: all `*.vue` imports are converted into custom elements
+     * - `string | RegExp`: matched files are converted into custom elements
+     *
+     * @default /\.ce\.vue$/
+     */
+    customElement?: boolean | string | RegExp | (string | RegExp)[];
+    /**
+     * Customize the component ID generation strategy.
+     * - `'filepath'`: hash the file path (relative to the project root)
+     * - `'filepath-source'`: hash the file path and the source code
+     * - `function`: custom function that takes the file path, source code,
+     *   whether in production mode, and the default hash function as arguments
+     * - **default:** `'filepath'` in development, `'filepath-source'` in production
+     */
+    componentIdGenerator?:
+      | "filepath"
+      | "filepath-source"
+      | ((
+          filepath: string,
+          source: string,
+          isProduction: boolean | undefined,
+          getHash: (text: string) => string,
+        ) => string);
+  };
 }
 
-export type Context = UnpluginContext & UnpluginContextMeta
+export type Context = UnpluginContext & UnpluginContextMeta;
 
-export type ResolvedOptions = Options &
+export type ResolvedOptions = Omit<Options, "customElement"> &
   Required<
     Pick<
       Options,
-      | 'include'
-      | 'isProduction'
-      | 'ssr'
-      | 'sourceMap'
-      | 'root'
-      | 'customElement'
-      | 'compiler'
-      | 'inlineTemplate'
+      | "include"
+      | "isProduction"
+      | "ssr"
+      | "sourceMap"
+      | "root"
+      | "compiler"
+      | "inlineTemplate"
+      | "features"
     >
   > & {
     /** Vite only */
-    devServer?: ViteDevServer
-    devToolsEnabled?: boolean
-    cssDevSourcemap: boolean
-  }
+    devServer?: ViteDevServer;
+    devToolsEnabled?: boolean;
+    cssDevSourcemap: boolean;
+  };
 
 function resolveOptions(rawOptions: Options): ResolvedOptions {
-  const root = rawOptions.root ?? process.cwd()
+  const root = rawOptions.root ?? process.cwd();
   const isProduction =
-    rawOptions.isProduction ?? process.env.NODE_ENV === 'production'
+    rawOptions.isProduction ?? process.env.NODE_ENV === "production";
+  const features = {
+    ...rawOptions.features,
+    optionsAPI: true,
+    prodDevtools: false,
+    prodHydrationMismatchDetails: false,
+    ...rawOptions.features,
+    customElement:
+      (rawOptions.features?.customElement || rawOptions.customElement) ??
+      /\.ce\.vue$/,
+  };
+
   return {
     ...rawOptions,
     include: rawOptions.include ?? /\.vue$/,
@@ -125,79 +201,94 @@ function resolveOptions(rawOptions: Options): ResolvedOptions {
     ssr: rawOptions.ssr ?? false,
     sourceMap: rawOptions.sourceMap ?? true,
     root,
-    customElement: rawOptions.customElement ?? /\.ce\.vue$/,
     compiler: rawOptions.compiler as any, // to be set in buildStart
-    devToolsEnabled: !isProduction,
+    devToolsEnabled: features.prodDevtools || !isProduction,
     cssDevSourcemap: false,
     inlineTemplate: rawOptions.inlineTemplate ?? true,
-  }
+    features,
+  };
 }
 
 export const plugin = createUnplugin<Options | undefined, false>(
   (rawOptions = {}, meta) => {
-    const options = shallowRef(resolveOptions(rawOptions))
+    clearScriptCache();
+
+    const options = shallowRef(resolveOptions(rawOptions));
 
     const filter = computed(() =>
       createFilter(options.value.include, options.value.exclude),
-    )
+    );
 
-    const customElementFilter = computed(() =>
-      typeof options.value.customElement === 'boolean'
-        ? () => options.value.customElement as boolean
-        : createFilter(options.value.customElement),
-    )
+    const customElementFilter = computed(() => {
+      const customElement = options.value.features.customElement;
+      return typeof customElement === "boolean"
+        ? () => customElement as boolean
+        : createFilter(customElement);
+    });
 
     const api = {
       get options() {
-        return options.value
+        return options.value;
       },
       set options(value) {
-        options.value = value
+        options.value = value;
       },
       version,
-    }
+    };
 
     return {
-      name: 'unplugin-vue',
+      name: "unplugin-vue",
 
       vite: {
         api,
         handleHotUpdate(ctx) {
+          ctx.server.ws.send({
+            type: "custom",
+            event: "file-changed",
+            data: { file: normalizePath(ctx.file) },
+          });
+
           if (options.value.compiler.invalidateTypeCache) {
-            options.value.compiler.invalidateTypeCache(ctx.file)
+            options.value.compiler.invalidateTypeCache(ctx.file);
           }
           if (typeDepToSFCMap.has(ctx.file)) {
-            return handleTypeDepChange(typeDepToSFCMap.get(ctx.file)!, ctx)
+            return handleTypeDepChange(typeDepToSFCMap.get(ctx.file)!, ctx);
           }
           if (filter.value(ctx.file)) {
             return handleHotUpdate(
               ctx,
               options.value,
               customElementFilter.value(ctx.file),
-            )
+            );
           }
         },
 
         config(config) {
           return {
             resolve: {
-              dedupe: config.build?.ssr ? [] : ['vue'],
+              dedupe: config.build?.ssr ? [] : ["vue"],
             },
             define: {
-              __VUE_OPTIONS_API__: config.define?.__VUE_OPTIONS_API__ ?? true,
-              __VUE_PROD_DEVTOOLS__:
-                config.define?.__VUE_PROD_DEVTOOLS__ ?? false,
-              __VUE_PROD_HYDRATION_MISMATCH_DETAILS__:
-                config.define?.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ ?? false,
+              __VUE_OPTIONS_API__: !!(
+                (options.value.features?.optionsAPI ?? true) ||
+                config.define?.__VUE_OPTIONS_API__
+              ),
+              __VUE_PROD_DEVTOOLS__: !!(
+                options.value.features?.prodDevtools ||
+                config.define?.__VUE_PROD_DEVTOOLS__
+              ),
+              __VUE_PROD_HYDRATION_MISMATCH_DETAILS__: !!(
+                options.value.features?.prodHydrationMismatchDetails ||
+                config.define?.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__
+              ),
             },
             ssr: {
-              // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
               // @ts-ignore -- config.legacy.buildSsrCjsExternalHeuristics will be removed in Vite 5
               external: config.legacy?.buildSsrCjsExternalHeuristics
-                ? ['vue', '@vue/server-renderer']
+                ? ["vue", "@vue/server-renderer"]
                 : [],
             },
-          }
+          };
         },
 
         configResolved(config) {
@@ -205,18 +296,20 @@ export const plugin = createUnplugin<Options | undefined, false>(
             ...options.value,
             root: config.root,
             sourceMap:
-              config.command === 'build' ? !!config.build.sourcemap : true,
+              config.command === "build" ? !!config.build.sourcemap : true,
             cssDevSourcemap: config.css?.devSourcemap ?? false,
             isProduction: config.isProduction,
             compiler: options.value.compiler || resolveCompiler(config.root),
-            fervidCompiler: options.value.compiler || new Compiler({ isProduction: config.isProduction }),
-            devToolsEnabled:
-              !!config.define!.__VUE_PROD_DEVTOOLS__ || !config.isProduction,
-          }
+            devToolsEnabled: !!(
+              options.value.features.prodDevtools ||
+              config.define!.__VUE_PROD_DEVTOOLS__ ||
+              !config.isProduction
+            ),
+          };
         },
 
         configureServer(server) {
-          options.value.devServer = server
+          options.value.devServer = server;
         },
       },
 
@@ -224,80 +317,94 @@ export const plugin = createUnplugin<Options | undefined, false>(
         api,
       },
 
+      rolldown: {
+        api,
+        options(opt) {
+          opt.moduleTypes ||= {};
+          opt.moduleTypes.vue ||= "js";
+        },
+      },
+
       buildStart() {
         const compiler = (options.value.compiler =
-          options.value.compiler || resolveCompiler(options.value.root))
+          options.value.compiler || resolveCompiler(options.value.root));
 
         if (compiler.invalidateTypeCache) {
-          options.value.devServer?.watcher.on('unlink', (file) => {
-            compiler.invalidateTypeCache(file)
-          })
+          options.value.devServer?.watcher.on("unlink", (file) => {
+            compiler.invalidateTypeCache(file);
+          });
         }
       },
 
       resolveId(id) {
         // component export helper
         if (normalizePath(id) === EXPORT_HELPER_ID) {
-          return id
+          return id;
         }
         // serve sub-part requests (*?vue) as virtual modules
         if (parseVueRequest(id).query.vue) {
-          return id
+          return id;
         }
       },
 
       loadInclude(id) {
-        if (id === EXPORT_HELPER_ID) return true
+        if (id === EXPORT_HELPER_ID) return true;
 
-        const { query } = parseVueRequest(id)
-        return query.vue
+        const { query } = parseVueRequest(id);
+        return query.vue;
       },
 
       load(id) {
-        const ssr = options.value.ssr
+        const ssr = options.value.ssr;
         if (id === EXPORT_HELPER_ID) {
-          return helperCode
+          return helperCode;
         }
 
-        const { filename, query } = parseVueRequest(id)
+        const { filename, query } = parseVueRequest(id);
         // select corresponding block for sub-part virtual modules
         if (query.vue) {
           if (query.src) {
-            return fs.readFileSync(filename, 'utf-8')
+            return fs.readFileSync(filename, "utf-8");
           }
-          const descriptor = getDescriptor(filename, options.value)!
-          let block: SFCBlock | null | undefined
-          if (query.type === 'script') {
+          const descriptor = getDescriptor(filename, options.value)!;
+          let block: SFCBlock | null | undefined;
+          if (query.type === "script") {
             // handle <script> + <script setup> merge via compileScript()
-            block = getResolvedScript(descriptor, ssr)
-          } else if (query.type === 'template') {
-            block = descriptor.template!
-          } else if (query.type === 'style') {
-            block = descriptor.styles[query.index!]
+            block = resolveScript(
+              meta.framework,
+              descriptor,
+              options.value,
+              ssr,
+              customElementFilter.value(filename),
+            );
+          } else if (query.type === "template") {
+            block = descriptor.template!;
+          } else if (query.type === "style") {
+            block = descriptor.styles[query.index!];
           } else if (query.index != null) {
-            block = descriptor.customBlocks[query.index]
+            block = descriptor.customBlocks[query.index];
           }
           if (block) {
             return {
               code: block.content,
               map: block.map as any,
-            }
+            };
           }
         }
       },
 
       transformInclude(id) {
-        const { filename, query } = parseVueRequest(id)
-        if (query.raw || query.url) return false
-        if (!filter.value(filename) && !query.vue) return false
+        const { filename, query } = parseVueRequest(id);
+        if (query.raw || query.url) return false;
+        if (!filter.value(filename) && !query.vue) return false;
 
-        return true
+        return true;
       },
 
       transform(code, id) {
-        const ssr = options.value.ssr
-        const { filename, query } = parseVueRequest(id)
-        const context = Object.assign({}, this, meta)
+        const ssr = options.value.ssr;
+        const { filename, query } = parseVueRequest(id);
+        const context = Object.assign({}, this, meta);
 
         if (!query.vue) {
           // main request
@@ -308,15 +415,15 @@ export const plugin = createUnplugin<Options | undefined, false>(
             context,
             ssr,
             customElementFilter.value(filename),
-          )
+          );
         } else {
           // sub block request
           const descriptor = query.src
             ? getSrcDescriptor(filename, query) ||
-            getTempSrcDescriptor(filename, query)
-            : getDescriptor(filename, options.value)!
+              getTempSrcDescriptor(filename, query)
+            : getDescriptor(filename, options.value)!;
 
-          if (query.type === 'template') {
+          if (query.type === "template") {
             return transformTemplateAsModule(
               code,
               descriptor,
@@ -324,8 +431,8 @@ export const plugin = createUnplugin<Options | undefined, false>(
               context,
               ssr,
               customElementFilter.value(filename),
-            )
-          } else if (query.type === 'style') {
+            );
+          } else if (query.type === "style") {
             return transformStyle(
               code,
               descriptor,
@@ -333,10 +440,10 @@ export const plugin = createUnplugin<Options | undefined, false>(
               options.value,
               this,
               filename,
-            )
+            );
           }
         }
       },
-    }
+    };
   },
-)
+);

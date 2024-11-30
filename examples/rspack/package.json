@@ -1,6 +1,5 @@
 {
   "private": true,
-  "author": "三咲智子 <sxzz@sxzz.moe>",
   "scripts": {
     "serve": "MODE=development rspack serve",
     "build": "rimraf dist && MODE=production rspack build",
@@ -16,6 +15,6 @@
     "serve": "^14.2.4",
     "style-loader": "^4.0.0",
     "ts-node": "^10.9.2",
-    "unplugin-vue": "workspace:*"
+    "unplugin-vue-fervid": "workspace:*"
   }
 }

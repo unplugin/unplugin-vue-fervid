@@ -1,4 +1,3 @@
-import unplugin from '.'
-import type {} from 'webpack'
+import { plugin } from "./core/index-old";
 
-export default unplugin.webpack
+export default plugin.webpack as typeof plugin.webpack;
