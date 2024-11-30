@@ -1,6 +1,6 @@
-# unplugin-vue-fervid WIP
+# unplugin-vue-fervid
 
-#### Use [fervid](https://github.com/phoenix-ru/fervid) to Transform Vue 3 SFC to JavaScript
+#### Use [fervid Rust Compiler](https://github.com/phoenix-ru/fervid) to Transform Vue 3 SFC to JavaScript
 
 Due to the need to consider `performance` and `compatibility` issues, `fervid` needs to refactor `node` api. Please look forward to it. 
 > [!IMPORTANT]
