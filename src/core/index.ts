@@ -372,42 +372,42 @@ export const plugin = createUnplugin<Options | undefined, false>(
             return fs.readFileSync(filename, "utf-8");
           }
 
-          // const descriptor = getDescriptor(filename, options.value)!;
-          // let block: SFCBlock | null | undefined;
-          // if (query.type === "script") {
-          //   // handle <script> + <script setup> merge via compileScript()
-          //   block = resolveScript(
-          //     meta.framework,
-          //     descriptor,
-          //     options.value,
-          //     ssr,
-          //     customElementFilter.value(filename),
-          //   );
-          // } else if (query.type === "template") {
-          //   block = descriptor.template!;
-          // } else if (query.type === "style") {
-          //   block = descriptor.styles[query.index!];
-          // } else if (query.index != null) {
-          //   block = descriptor.customBlocks[query.index];
-          // }
+          const descriptor = getDescriptor(filename, options.value)!;
+          let block: SFCBlock | null | undefined;
+          if (query.type === "script") {
+            // handle <script> + <script setup> merge via compileScript()
+            block = resolveScript(
+              meta.framework,
+              descriptor,
+              options.value,
+              ssr,
+              customElementFilter.value(filename),
+            );
+          } else if (query.type === "template") {
+            block = descriptor.template!;
+          } else if (query.type === "style") {
+            block = descriptor.styles[query.index!];
+          } else if (query.index != null) {
+            block = descriptor.customBlocks[query.index];
+          }
 
-          // if (block) {
+          if (block) {
+            // const res = fervidCompiler.compileSync(
+            //   fs.readFileSync(filename, "utf-8"),
+            //   {
+            //     id,
+            //     filename: id,
+            //   },
+            // );
+            console.log(block.content);
 
-          const res = fervidCompiler.compileSync(
-            fs.readFileSync(filename, "utf-8"),
-            {
-              id,
-              filename: id,
-            },
-          );
-
-          return {
-            code: res.code,
-            // code: block.content,
-            // map:
-            map: "",
-          };
-          // }
+            return {
+              // code: res.code,
+              code: block.content,
+              // map:
+              map: "",
+            };
+          }
         }
       },
 
@@ -437,6 +437,7 @@ export const plugin = createUnplugin<Options | undefined, false>(
             fervidCompiler,
           );
         } else {
+          console.log(query);
           // sub block request
           const descriptor = query.src
             ? getSrcDescriptor(filename, query) ||

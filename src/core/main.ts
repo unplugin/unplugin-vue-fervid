@@ -254,7 +254,7 @@ export async function transformMain(
 
   // handle TS transpilation
   let resolvedCode = output.join("\n");
-  console.log(resolvedCode);
+  // console.log(resolvedCode);
 
   const lang = descriptor.scriptSetup?.lang || descriptor.script?.lang;
 
