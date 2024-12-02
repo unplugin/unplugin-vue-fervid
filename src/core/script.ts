@@ -1,6 +1,6 @@
 import { resolveTemplateCompilerOptions } from "./template";
 import { cache as descriptorCache } from "./utils/descriptorCache";
-import type { ResolvedOptions } from "./index-old";
+import type { ResolvedOptions } from "./index";
 import type { UnpluginContextMeta } from "unplugin";
 import type { SFCDescriptor, SFCScriptBlock } from "vue/compiler-sfc";
 

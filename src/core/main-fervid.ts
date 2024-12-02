@@ -28,7 +28,7 @@ import {
   setSrcDescriptor,
 } from "./utils/descriptorCache";
 import { createError } from "./utils/error";
-import type { Context, ResolvedOptions } from "./index-old";
+import type { Context, ResolvedOptions } from "./index";
 import type { PluginContext } from "rollup";
 import type { RawSourceMap } from "source-map-js";
 import type { SFCBlock, SFCDescriptor } from "vue/compiler-sfc";
@@ -40,11 +40,16 @@ export async function transformMain(
   pluginContext: Context,
   ssr: boolean,
   customElement: boolean,
+  fervidCompiler?: any,
 ) {
   const { devServer, isProduction, devToolsEnabled } = options;
 
   const prevDescriptor = getPrevDescriptor(filename);
   const { descriptor, errors } = createDescriptor(filename, code, options);
+  const res = fervidCompiler.compileSync(code, {
+    id: filename,
+    filename,
+  });
 
   if (fs.existsSync(filename)) {
     // populate descriptor cache for HMR if it's not set yet
@@ -75,6 +80,7 @@ export async function transformMain(
   const hasScoped = descriptor.styles.some((s) => s.scoped);
 
   // script
+  // TODO script code
   const { code: scriptCode, map: scriptMap } = await genScriptCode(
     descriptor,
     options,
@@ -87,17 +93,19 @@ export async function transformMain(
   const hasTemplateImport =
     descriptor.template && !isUseInlineTemplate(descriptor, options);
 
-  let templateCode = "";
+  // TODO templateCode
+  const templateCode = "";
   let templateMap: RawSourceMap | undefined;
-  if (hasTemplateImport) {
-    ({ code: templateCode, map: templateMap } = await genTemplateCode(
-      descriptor,
-      options,
-      pluginContext,
-      ssr,
-      customElement,
-    ));
-  }
+
+  // if (hasTemplateImport) {
+  //   ({ code: templateCode, map: templateMap } = await genTemplateCode(
+  //     descriptor,
+  //     options,
+  //     pluginContext,
+  //     ssr,
+  //     customElement,
+  //   ));
+  // }
 
   if (hasTemplateImport) {
     attachedProps.push(
@@ -113,22 +121,39 @@ export async function transformMain(
   }
 
   // styles
-  const stylesCode = await genStyleCode(
-    descriptor,
-    pluginContext,
-    customElement,
-    attachedProps,
-  );
+  // TODO styles code
+  // const stylesCode = await genStyleCode(
+  //   descriptor,
+  //   pluginContext,
+  //   customElement,
+  //   attachedProps,
+  // );
 
   // custom blocks
-  const customBlocksCode = await genCustomBlockCode(descriptor, pluginContext);
+  // TODO custom blocks
+  // const customBlocksCode = await genCustomBlockCode(descriptor, pluginContext);
 
   const output: string[] = [
-    scriptCode,
-    templateCode,
-    stylesCode,
-    customBlocksCode,
+    // scriptCode,
+    // res.code,
+    // templateCode,
+    // stylesCode,
+    // customBlocksCode,
   ];
+  // test code
+  output.push(
+    // `import { defineComponent as _defineComponent } from 'vue'`,
+    `const _sfc_main = _defineComponent({`,
+    `  __name: 'App',`,
+    `  setup(__props, { expose: __expose }) {`,
+    `    __expose();`,
+    `    const msg = ref("");`,
+    `    const __returned__ = { msg };`,
+    `    Object.defineProperty(__returned__, '__isScriptSetup', { enumerable: false, value: true });`,
+    `    return __returned__;`,
+    `  }`,
+    `});`,
+  );
   if (hasScoped) {
     attachedProps.push([
       `__scopeId`,
@@ -150,6 +175,8 @@ export async function transformMain(
     !ssr &&
     !isProduction
   ) {
+    // TODO HMR
+
     output.push(
       `_sfc_main.__hmrId = ${JSON.stringify(descriptor.id)}`,
       `typeof __VUE_HMR_RUNTIME__ !== 'undefined' && ` +
@@ -182,114 +209,117 @@ export async function transformMain(
   }
 
   // SSR module registration by wrapping user setup
-  if (ssr) {
-    const normalizedFilename = normalizePath(
-      path.relative(options.root, filename),
-    );
-    output.push(
-      `import { useSSRContext as __vite_useSSRContext } from 'vue'`,
-      `const _sfc_setup = _sfc_main.setup`,
-      `_sfc_main.setup = (props, ctx) => {`,
-      `  const ssrContext = __vite_useSSRContext()`,
-      `  ;(ssrContext.modules || (ssrContext.modules = new Set())).add(${JSON.stringify(
-        normalizedFilename,
-      )})`,
-      `  return _sfc_setup ? _sfc_setup(props, ctx) : undefined`,
-      `}`,
-    );
-  }
+  // TODO ssr
+  // if (ssr) {
+  //   const normalizedFilename = normalizePath(
+  //     path.relative(options.root, filename),
+  //   );
+  //   output.push(
+  //     `import { useSSRContext as __vite_useSSRContext } from 'vue'`,
+  //     `const _sfc_setup = _sfc_main.setup`,
+  //     `_sfc_main.setup = (props, ctx) => {`,
+  //     `  const ssrContext = __vite_useSSRContext()`,
+  //     `  ;(ssrContext.modules || (ssrContext.modules = new Set())).add(${JSON.stringify(
+  //       normalizedFilename,
+  //     )})`,
+  //     `  return _sfc_setup ? _sfc_setup(props, ctx) : undefined`,
+  //     `}`,
+  //   );
+  // }
 
-  let resolvedMap: RawSourceMap | undefined = undefined;
-  if (options.sourceMap) {
-    if (scriptMap && templateMap) {
-      // if the template is inlined into the main module (indicated by the presence
-      // of templateMap), we need to concatenate the two source maps.
+  const resolvedMap: RawSourceMap | undefined = undefined;
+  // TODO sourcemap
+  // if (options.sourceMap) {
+  //   if (scriptMap && templateMap) {
+  //     // if the template is inlined into the main module (indicated by the presence
+  //     // of templateMap), we need to concatenate the two source maps.
 
-      const gen = fromMap(
-        // version property of result.map is declared as string
-        // but actually it is `3`
-        scriptMap as Omit<RawSourceMap, "version"> as TraceEncodedSourceMap,
-      );
-      const tracer = new TraceMap(
-        // same above
-        templateMap as Omit<RawSourceMap, "version"> as TraceEncodedSourceMap,
-      );
-      const offset = (scriptCode.match(/\r?\n/g)?.length ?? 0) + 1;
-      eachMapping(tracer, (m) => {
-        if (m.source == null) return;
-        addMapping(gen, {
-          source: m.source,
-          original: { line: m.originalLine, column: m.originalColumn },
-          generated: {
-            line: m.generatedLine + offset,
-            column: m.generatedColumn,
-          },
-        });
-      });
+  //     const gen = fromMap(
+  //       // version property of result.map is declared as string
+  //       // but actually it is `3`
+  //       scriptMap as Omit<RawSourceMap, "version"> as TraceEncodedSourceMap,
+  //     );
+  //     const tracer = new TraceMap(
+  //       // same above
+  //       templateMap as Omit<RawSourceMap, "version"> as TraceEncodedSourceMap,
+  //     );
+  //     const offset = (scriptCode.match(/\r?\n/g)?.length ?? 0) + 1;
+  //     eachMapping(tracer, (m) => {
+  //       if (m.source == null) return;
+  //       addMapping(gen, {
+  //         source: m.source,
+  //         original: { line: m.originalLine, column: m.originalColumn },
+  //         generated: {
+  //           line: m.generatedLine + offset,
+  //           column: m.generatedColumn,
+  //         },
+  //       });
+  //     });
 
-      // same above
-      resolvedMap = toEncodedMap(gen) as Omit<
-        GenEncodedSourceMap,
-        "version"
-      > as RawSourceMap;
-      // if this is a template only update, we will be reusing a cached version
-      // of the main module compile result, which has outdated sourcesContent.
-      resolvedMap.sourcesContent = templateMap.sourcesContent;
-    } else {
-      // if one of `scriptMap` and `templateMap` is empty, use the other one
-      resolvedMap = scriptMap ?? templateMap;
-    }
-  }
+  //     // same above
+  //     resolvedMap = toEncodedMap(gen) as Omit<
+  //       GenEncodedSourceMap,
+  //       "version"
+  //     > as RawSourceMap;
+  //     // if this is a template only update, we will be reusing a cached version
+  //     // of the main module compile result, which has outdated sourcesContent.
+  //     resolvedMap.sourcesContent = templateMap.sourcesContent;
+  //   } else {
+  //     // if one of `scriptMap` and `templateMap` is empty, use the other one
+  //     resolvedMap = scriptMap ?? templateMap;
+  //   }
+  // }
 
   if (attachedProps.length === 0) {
     output.push(`export default _sfc_main`);
   } else {
     output.push(
-      `import _export_sfc from '${EXPORT_HELPER_ID}'`,
-      `export default /*#__PURE__*/_export_sfc(_sfc_main, [${attachedProps
-        .map(([key, val]) => `['${key}',${val}]`)
-        .join(",")}])`,
+      // `import _export_sfc from '${EXPORT_HELPER_ID}'`,
+      res.code,
+      // `export default /*#__PURE__*/_export_sfc(_sfc_main, [${attachedProps
+      //   .map(([key, val]) => `['${key}',${val}]`)
+      //   .join(",")}])`,
     );
   }
 
   // handle TS transpilation
-  let resolvedCode = output.join("\n");
+  const resolvedCode = output.join("\n");
+  // const lang = descriptor.scriptSetup?.lang || descriptor.script?.lang;
   console.log(resolvedCode);
 
-  const lang = descriptor.scriptSetup?.lang || descriptor.script?.lang;
-
-  if (
-    lang &&
-    /tsx?$/.test(lang) &&
-    !descriptor.script?.src // only normal script can have src
-  ) {
-    const { code, map } = await transformWithEsbuild(
-      resolvedCode,
-      filename,
-      {
-        target: pluginContext.framework === "vite" ? "esnext" : undefined,
-        // #430 support decorators in .vue file
-        // target can be overridden by esbuild config target
-        ...options.devServer?.config.esbuild,
-        loader: "ts",
-        sourcemap: options.sourceMap,
-      },
-      resolvedMap,
-    );
-    resolvedCode = code;
-    resolvedMap = resolvedMap ? (map as any) : resolvedMap;
-  }
+  // TODO type src
+  // if (
+  //   lang &&
+  //   /tsx?$/.test(lang) &&
+  //   !descriptor.script?.src // only normal script can have src
+  // ) {
+  //   const { code, map } = await transformWithEsbuild(
+  //     resolvedCode,
+  //     filename,
+  //     {
+  //       target: pluginContext.framework === "vite" ? "esnext" : undefined,
+  //       // #430 support decorators in .vue file
+  //       // target can be overridden by esbuild config target
+  //       ...options.devServer?.config.esbuild,
+  //       loader: "ts",
+  //       sourcemap: options.sourceMap,
+  //     },
+  //     resolvedMap,
+  //   );
+  //   resolvedCode = code;
+  //   resolvedMap = resolvedMap ? (map as any) : resolvedMap;
+  // }
 
   return {
     code: resolvedCode,
     map: resolvedMap || {
       mappings: "",
     },
-    meta: {
-      vite: {
-        lang: descriptor.script?.lang || descriptor.scriptSetup?.lang || "js",
-      },
-    },
+    // meta: {
+    //   vite: {
+    //     lang: descriptor.script?.lang || descriptor.scriptSetup?.lang || "js",
+    //   },
+    // },
   };
 }
 
@@ -354,7 +384,6 @@ async function genScriptCode(
 }> {
   let scriptCode = `const ${scriptIdentifier} = {}`;
   let map: RawSourceMap | undefined;
-
   const script = resolveScript(
     pluginContext.framework,
     descriptor,
@@ -362,6 +391,7 @@ async function genScriptCode(
     ssr,
     customElement,
   );
+
   if (script) {
     // If the script is js/ts and has no external src, it can be directly placed
     // in the main module.

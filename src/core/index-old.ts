@@ -1,75 +1,74 @@
-import fs from 'node:fs'
-import { type ViteDevServer, createFilter, normalizePath } from 'vite'
+import fs from "node:fs";
+import { Compiler } from "@fervid/napi";
 import {
+  createUnplugin,
   type UnpluginContext,
   type UnpluginContextMeta,
-  createUnplugin,
-} from 'unplugin'
-import { computed, shallowRef } from 'vue'
-import { resolveCompiler } from './compiler'
-import { getResolvedScript, typeDepToSFCMap } from './script'
-import { transformMain } from './main'
-import { transformTemplateAsModule } from './template'
-import { transformStyle } from './style'
-import { EXPORT_HELPER_ID, helperCode } from './helper'
-import { version } from '../../package.json'
+} from "unplugin";
+import { createFilter, normalizePath, type ViteDevServer } from "vite";
+import { computed, shallowRef } from "vue";
+import { version } from "../../package.json";
+import { resolveCompiler } from "./compiler";
+import { handleHotUpdate, handleTypeDepChange } from "./handleHotUpdate";
+import { EXPORT_HELPER_ID, helperCode } from "./helper";
+import { transformMain } from "./main";
+import { getResolvedScript, typeDepToSFCMap } from "./script";
+import { transformStyle } from "./style";
+import { transformTemplateAsModule } from "./template";
 import {
   getDescriptor,
   getSrcDescriptor,
   getTempSrcDescriptor,
-} from './utils/descriptorCache'
-import { parseVueRequest } from './utils/query'
-import { handleHotUpdate, handleTypeDepChange } from './handleHotUpdate'
+} from "./utils/descriptorCache";
+import { parseVueRequest } from "./utils/query";
 import type {
   SFCBlock,
   SFCScriptCompileOptions,
   SFCStyleCompileOptions,
   SFCTemplateCompileOptions,
-  // eslint-disable-next-line import/no-duplicates
-} from 'vue/compiler-sfc'
-// eslint-disable-next-line import/no-duplicates
-import type * as _compiler from 'vue/compiler-sfc'
-import { Compiler } from '@fervid/napi'
+} from "vue/compiler-sfc";
 
-export { parseVueRequest, type VueQuery } from './utils/query'
+import type * as _compiler from "vue/compiler-sfc";
+
+export { parseVueRequest, type VueQuery } from "./utils/query";
 
 export interface Options {
-  include?: string | RegExp | (string | RegExp)[]
-  exclude?: string | RegExp | (string | RegExp)[]
+  include?: string | RegExp | (string | RegExp)[];
+  exclude?: string | RegExp | (string | RegExp)[];
 
-  isProduction?: boolean
-  ssr?: boolean
-  sourceMap?: boolean
-  root?: string
+  isProduction?: boolean;
+  ssr?: boolean;
+  sourceMap?: boolean;
+  root?: string;
 
   // options to pass on to vue/compiler-sfc
   script?: Partial<
     Pick<
       SFCScriptCompileOptions,
-      | 'babelParserPlugins'
-      | 'globalTypeFiles'
-      | 'propsDestructure'
-      | 'fs'
-      | 'hoistStatic'
+      | "babelParserPlugins"
+      | "globalTypeFiles"
+      | "propsDestructure"
+      | "fs"
+      | "hoistStatic"
     >
   > & {
     /**
      * @deprecated defineModel is now a stable feature and always enabled if
      * using Vue 3.4 or above.
      */
-    defineModel?: boolean
-  }
+    defineModel?: boolean;
+  };
   template?: Partial<
     Pick<
       SFCTemplateCompileOptions,
-      | 'compiler'
-      | 'compilerOptions'
-      | 'preprocessOptions'
-      | 'preprocessCustomRequire'
-      | 'transformAssetUrls'
+      | "compiler"
+      | "compilerOptions"
+      | "preprocessOptions"
+      | "preprocessCustomRequire"
+      | "transformAssetUrls"
     >
-  >
-  style?: Partial<Pick<SFCStyleCompileOptions, 'trim'>>
+  >;
+  style?: Partial<Pick<SFCStyleCompileOptions, "trim">>;
 
   /**
    * Transform Vue SFCs into custom elements.
@@ -78,46 +77,46 @@ export interface Options {
    *
    * @default /\.ce\.vue$/
    */
-  customElement?: boolean | string | RegExp | (string | RegExp)[]
+  customElement?: boolean | string | RegExp | (string | RegExp)[];
 
   /**
    * Use custom compiler-sfc instance. Can be used to force a specific version.
    */
-  compiler?: typeof _compiler
+  compiler?: typeof _compiler;
 
-  fervidCompiler?: any
+  fervidCompiler?: any;
   /**
    * @default true
    */
-  inlineTemplate?: boolean
+  inlineTemplate?: boolean;
 }
 
-export type Context = UnpluginContext & UnpluginContextMeta
+export type Context = UnpluginContext & UnpluginContextMeta;
 
 export type ResolvedOptions = Options &
   Required<
     Pick<
       Options,
-      | 'include'
-      | 'isProduction'
-      | 'ssr'
-      | 'sourceMap'
-      | 'root'
-      | 'customElement'
-      | 'compiler'
-      | 'inlineTemplate'
+      | "include"
+      | "isProduction"
+      | "ssr"
+      | "sourceMap"
+      | "root"
+      | "customElement"
+      | "compiler"
+      | "inlineTemplate"
     >
   > & {
     /** Vite only */
-    devServer?: ViteDevServer
-    devToolsEnabled?: boolean
-    cssDevSourcemap: boolean
-  }
+    devServer?: ViteDevServer;
+    devToolsEnabled?: boolean;
+    cssDevSourcemap: boolean;
+  };
 
 function resolveOptions(rawOptions: Options): ResolvedOptions {
-  const root = rawOptions.root ?? process.cwd()
+  const root = rawOptions.root ?? process.cwd();
   const isProduction =
-    rawOptions.isProduction ?? process.env.NODE_ENV === 'production'
+    rawOptions.isProduction ?? process.env.NODE_ENV === "production";
   return {
     ...rawOptions,
     include: rawOptions.include ?? /\.vue$/,
@@ -130,58 +129,58 @@ function resolveOptions(rawOptions: Options): ResolvedOptions {
     devToolsEnabled: !isProduction,
     cssDevSourcemap: false,
     inlineTemplate: rawOptions.inlineTemplate ?? true,
-  }
+  };
 }
 
 export const plugin = createUnplugin<Options | undefined, false>(
   (rawOptions = {}, meta) => {
-    const options = shallowRef(resolveOptions(rawOptions))
+    const options = shallowRef(resolveOptions(rawOptions));
 
     const filter = computed(() =>
       createFilter(options.value.include, options.value.exclude),
-    )
+    );
 
     const customElementFilter = computed(() =>
-      typeof options.value.customElement === 'boolean'
+      typeof options.value.customElement === "boolean"
         ? () => options.value.customElement as boolean
         : createFilter(options.value.customElement),
-    )
+    );
 
     const api = {
       get options() {
-        return options.value
+        return options.value;
       },
       set options(value) {
-        options.value = value
+        options.value = value;
       },
       version,
-    }
+    };
 
     return {
-      name: 'unplugin-vue',
+      name: "unplugin-vue",
 
       vite: {
         api,
         handleHotUpdate(ctx) {
           if (options.value.compiler.invalidateTypeCache) {
-            options.value.compiler.invalidateTypeCache(ctx.file)
+            options.value.compiler.invalidateTypeCache(ctx.file);
           }
           if (typeDepToSFCMap.has(ctx.file)) {
-            return handleTypeDepChange(typeDepToSFCMap.get(ctx.file)!, ctx)
+            return handleTypeDepChange(typeDepToSFCMap.get(ctx.file)!, ctx);
           }
           if (filter.value(ctx.file)) {
             return handleHotUpdate(
               ctx,
               options.value,
               customElementFilter.value(ctx.file),
-            )
+            );
           }
         },
 
         config(config) {
           return {
             resolve: {
-              dedupe: config.build?.ssr ? [] : ['vue'],
+              dedupe: config.build?.ssr ? [] : ["vue"],
             },
             define: {
               __VUE_OPTIONS_API__: config.define?.__VUE_OPTIONS_API__ ?? true,
@@ -191,13 +190,12 @@ export const plugin = createUnplugin<Options | undefined, false>(
                 config.define?.__VUE_PROD_HYDRATION_MISMATCH_DETAILS__ ?? false,
             },
             ssr: {
-              // eslint-disable-next-line @typescript-eslint/prefer-ts-expect-error
               // @ts-ignore -- config.legacy.buildSsrCjsExternalHeuristics will be removed in Vite 5
               external: config.legacy?.buildSsrCjsExternalHeuristics
-                ? ['vue', '@vue/server-renderer']
+                ? ["vue", "@vue/server-renderer"]
                 : [],
             },
-          }
+          };
         },
 
         configResolved(config) {
@@ -205,18 +203,20 @@ export const plugin = createUnplugin<Options | undefined, false>(
             ...options.value,
             root: config.root,
             sourceMap:
-              config.command === 'build' ? !!config.build.sourcemap : true,
+              config.command === "build" ? !!config.build.sourcemap : true,
             cssDevSourcemap: config.css?.devSourcemap ?? false,
             isProduction: config.isProduction,
             compiler: options.value.compiler || resolveCompiler(config.root),
-            fervidCompiler: options.value.compiler || new Compiler({ isProduction: config.isProduction }),
+            fervidCompiler:
+              options.value.compiler ||
+              new Compiler({ isProduction: config.isProduction }),
             devToolsEnabled:
               !!config.define!.__VUE_PROD_DEVTOOLS__ || !config.isProduction,
-          }
+          };
         },
 
         configureServer(server) {
-          options.value.devServer = server
+          options.value.devServer = server;
         },
       },
 
@@ -226,78 +226,78 @@ export const plugin = createUnplugin<Options | undefined, false>(
 
       buildStart() {
         const compiler = (options.value.compiler =
-          options.value.compiler || resolveCompiler(options.value.root))
+          options.value.compiler || resolveCompiler(options.value.root));
 
         if (compiler.invalidateTypeCache) {
-          options.value.devServer?.watcher.on('unlink', (file) => {
-            compiler.invalidateTypeCache(file)
-          })
+          options.value.devServer?.watcher.on("unlink", (file) => {
+            compiler.invalidateTypeCache(file);
+          });
         }
       },
 
       resolveId(id) {
         // component export helper
         if (normalizePath(id) === EXPORT_HELPER_ID) {
-          return id
+          return id;
         }
         // serve sub-part requests (*?vue) as virtual modules
         if (parseVueRequest(id).query.vue) {
-          return id
+          return id;
         }
       },
 
       loadInclude(id) {
-        if (id === EXPORT_HELPER_ID) return true
+        if (id === EXPORT_HELPER_ID) return true;
 
-        const { query } = parseVueRequest(id)
-        return query.vue
+        const { query } = parseVueRequest(id);
+        return query.vue;
       },
 
       load(id) {
-        const ssr = options.value.ssr
+        const ssr = options.value.ssr;
         if (id === EXPORT_HELPER_ID) {
-          return helperCode
+          return helperCode;
         }
 
-        const { filename, query } = parseVueRequest(id)
+        const { filename, query } = parseVueRequest(id);
         // select corresponding block for sub-part virtual modules
         if (query.vue) {
           if (query.src) {
-            return fs.readFileSync(filename, 'utf-8')
+            return fs.readFileSync(filename, "utf-8");
           }
-          const descriptor = getDescriptor(filename, options.value)!
-          let block: SFCBlock | null | undefined
-          if (query.type === 'script') {
+          const descriptor = getDescriptor(filename, options.value)!;
+          let block: SFCBlock | null | undefined;
+          if (query.type === "script") {
             // handle <script> + <script setup> merge via compileScript()
-            block = getResolvedScript(descriptor, ssr)
-          } else if (query.type === 'template') {
-            block = descriptor.template!
-          } else if (query.type === 'style') {
-            block = descriptor.styles[query.index!]
+            block = getResolvedScript(descriptor, ssr);
+          } else if (query.type === "template") {
+            block = descriptor.template!;
+          } else if (query.type === "style") {
+            block = descriptor.styles[query.index!];
           } else if (query.index != null) {
-            block = descriptor.customBlocks[query.index]
+            block = descriptor.customBlocks[query.index];
           }
           if (block) {
             return {
               code: block.content,
               map: block.map as any,
-            }
+            };
           }
         }
       },
 
       transformInclude(id) {
-        const { filename, query } = parseVueRequest(id)
-        if (query.raw || query.url) return false
-        if (!filter.value(filename) && !query.vue) return false
+        const { filename, query } = parseVueRequest(id);
+        if (query.raw || query.url) return false;
+        if (!filter.value(filename) && !query.vue) return false;
 
-        return true
+        return true;
       },
 
       transform(code, id) {
-        const ssr = options.value.ssr
-        const { filename, query } = parseVueRequest(id)
-        const context = Object.assign({}, this, meta)
+        const ssr = options.value.ssr;
+        const { filename, query } = parseVueRequest(id);
+        const context = Object.assign({}, this, meta);
 
         if (!query.vue) {
           // main request
@@ -308,15 +308,15 @@ export const plugin = createUnplugin<Options | undefined, false>(
             context,
             ssr,
             customElementFilter.value(filename),
-          )
+          );
         } else {
           // sub block request
           const descriptor = query.src
             ? getSrcDescriptor(filename, query) ||
-            getTempSrcDescriptor(filename, query)
-            : getDescriptor(filename, options.value)!
+              getTempSrcDescriptor(filename, query)
+            : getDescriptor(filename, options.value)!;
 
-          if (query.type === 'template') {
+          if (query.type === "template") {
             return transformTemplateAsModule(
               code,
               descriptor,
@@ -324,8 +324,8 @@ export const plugin = createUnplugin<Options | undefined, false>(
               context,
               ssr,
               customElementFilter.value(filename),
-            )
-          } else if (query.type === 'style') {
+            );
+          } else if (query.type === "style") {
             return transformStyle(
               code,
               descriptor,
@@ -333,10 +333,10 @@ export const plugin = createUnplugin<Options | undefined, false>(
               options.value,
               this,
               filename,
-            )
+            );
           }
         }
       },
-    }
+    };
   },
-)
+);

@@ -1,1 +1,1 @@
-export * from "./core/index-old";
+export * from "./core/index";

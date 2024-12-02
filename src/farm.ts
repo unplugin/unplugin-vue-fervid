@@ -1,3 +1,3 @@
-import unplugin from '.'
+import { plugin } from "./core";
 
-export default unplugin.farm
+export default plugin.farm as typeof plugin.farm;

@@ -1,5 +1,6 @@
 import fs from "node:fs";
 import process from "node:process";
+import { Compiler } from "@fervid/napi";
 import { computed, shallowRef } from "@vue/reactivity";
 import {
   createUnplugin,
@@ -146,14 +147,14 @@ export interface Options {
      * - **default:** `'filepath'` in development, `'filepath-source'` in production
      */
     componentIdGenerator?:
-      | "filepath"
-      | "filepath-source"
-      | ((
-          filepath: string,
-          source: string,
-          isProduction: boolean | undefined,
-          getHash: (text: string) => string,
-        ) => string);
+    | "filepath"
+    | "filepath-source"
+    | ((
+      filepath: string,
+      source: string,
+      isProduction: boolean | undefined,
+      getHash: (text: string) => string,
+    ) => string);
   };
 }
 
@@ -235,7 +236,7 @@ export const plugin = createUnplugin<Options | undefined, false>(
       },
       version,
     };
-
+    let fervidCompiler: Compiler;
     return {
       name: "unplugin-vue",
 
@@ -326,6 +327,10 @@ export const plugin = createUnplugin<Options | undefined, false>(
       },
 
       buildStart() {
+        fervidCompiler = new Compiler({
+          isProduction: options.value.isProduction,
+        });
+
         const compiler = (options.value.compiler =
           options.value.compiler || resolveCompiler(options.value.root));
 
@@ -366,30 +371,43 @@ export const plugin = createUnplugin<Options | undefined, false>(
           if (query.src) {
             return fs.readFileSync(filename, "utf-8");
           }
-          const descriptor = getDescriptor(filename, options.value)!;
-          let block: SFCBlock | null | undefined;
-          if (query.type === "script") {
-            // handle <script> + <script setup> merge via compileScript()
-            block = resolveScript(
-              meta.framework,
-              descriptor,
-              options.value,
-              ssr,
-              customElementFilter.value(filename),
-            );
-          } else if (query.type === "template") {
-            block = descriptor.template!;
-          } else if (query.type === "style") {
-            block = descriptor.styles[query.index!];
-          } else if (query.index != null) {
-            block = descriptor.customBlocks[query.index];
-          }
-          if (block) {
-            return {
-              code: block.content,
-              map: block.map as any,
-            };
-          }
+
+          // const descriptor = getDescriptor(filename, options.value)!;
+          // let block: SFCBlock | null | undefined;
+          // if (query.type === "script") {
+          //   // handle <script> + <script setup> merge via compileScript()
+          //   block = resolveScript(
+          //     meta.framework,
+          //     descriptor,
+          //     options.value,
+          //     ssr,
+          //     customElementFilter.value(filename),
+          //   );
+          // } else if (query.type === "template") {
+          //   block = descriptor.template!;
+          // } else if (query.type === "style") {
+          //   block = descriptor.styles[query.index!];
+          // } else if (query.index != null) {
+          //   block = descriptor.customBlocks[query.index];
+          // }
+
+          // if (block) {
+
+          const res = fervidCompiler.compileSync(
+            fs.readFileSync(filename, "utf-8"),
+            {
+              id,
+              filename: id,
+            },
+          );
+
+          return {
+            code: res.code,
+            // code: block.content,
+            // map:
+            map: "",
+          };
+          // }
         }
       },
 
@@ -400,10 +418,11 @@ export const plugin = createUnplugin<Options | undefined, false>(
 
         return true;
       },
-
-      transform(code, id) {
+      async transform(code, id) {
         const ssr = options.value.ssr;
+
         const { filename, query } = parseVueRequest(id);
+
         const context = Object.assign({}, this, meta);
 
         if (!query.vue) {
@@ -415,12 +434,13 @@ export const plugin = createUnplugin<Options | undefined, false>(
             context,
             ssr,
             customElementFilter.value(filename),
+            fervidCompiler,
           );
         } else {
           // sub block request
           const descriptor = query.src
             ? getSrcDescriptor(filename, query) ||
-              getTempSrcDescriptor(filename, query)
+            getTempSrcDescriptor(filename, query)
             : getDescriptor(filename, options.value)!;
 
           if (query.type === "template") {

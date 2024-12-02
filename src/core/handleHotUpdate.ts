@@ -12,7 +12,7 @@ import {
   getDescriptor,
   invalidateDescriptor,
 } from "./utils/descriptorCache";
-import type { ResolvedOptions } from "./index-old";
+import type { ResolvedOptions } from "./index";
 import type * as t from "@babel/types";
 
 import type { SFCBlock, SFCDescriptor } from "vue/compiler-sfc";

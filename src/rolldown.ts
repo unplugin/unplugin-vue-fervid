@@ -1,3 +1,3 @@
-import { plugin } from './core/index-old'
+import { plugin } from './core/index'
 
 export default plugin.rolldown as typeof plugin.rolldown
