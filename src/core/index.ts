@@ -399,8 +399,6 @@ export const plugin = createUnplugin<Options | undefined, false>(
             //     filename: id,
             //   },
             // );
-            console.log(block.content);
-
             return {
               // code: res.code,
               code: block.content,
@@ -424,7 +422,6 @@ export const plugin = createUnplugin<Options | undefined, false>(
         const { filename, query } = parseVueRequest(id);
 
         const context = Object.assign({}, this, meta);
-
         if (!query.vue) {
           // main request
           return transformMain(
@@ -437,7 +434,6 @@ export const plugin = createUnplugin<Options | undefined, false>(
             fervidCompiler,
           );
         } else {
-          console.log(query);
           // sub block request
           const descriptor = query.src
             ? getSrcDescriptor(filename, query) ||

@@ -253,6 +253,8 @@ export async function transformMain(
   }
 
   // handle TS transpilation
+  console.log(output);
+  
   let resolvedCode = output.join("\n");
   // console.log(resolvedCode);
 
