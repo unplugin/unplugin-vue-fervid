@@ -15,11 +15,11 @@ Due to the need to consider `performance` and `compatibility` issues, `fervid` n
 
 this is my current understanding of the vue compilation process
 
-i will first summarize it as a whole and then proceed to the point of compiling the specific core parts of the code
+first summarize it as a whole and then proceed to the point of compiling the specific core parts of the code
 
-i will only describe the vue compilation process and the current difference between fervid and compiler-sfc, the next goal is to get as close to compiler-sfc functionality as possible
+only describe the vue compilation process and the current difference between fervid and compiler-sfc, the next goal is to get as close to compiler-sfc functionality as possible
 
-i choose vite-plugin-vue as the segmentation point among vue-loader and vite-plugin-vue to be more in line with the modern plugin process
+choose vite-plugin-vue as the segmentation point among vue-loader and vite-plugin-vue to be more in line with the modern plugin process
 
 ## plugin compilation process
 
