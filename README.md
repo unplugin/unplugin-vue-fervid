@@ -10,6 +10,9 @@ Due to the need to consider `performance` and `compatibility` issues, `fervid` n
 
 #### playground: [Fervid Playground](https://phoenix-ru.github.io/fervid/)
 
+
+# Part One main process
+
 this is my current understanding of the vue compilation process
 
 i will first summarize it as a whole and then proceed to the point of compiling the specific core parts of the code
@@ -414,12 +417,13 @@ const cssVars = descriptor.cssVars;
 
 ### There are also a few more important methods in the compilation of vue
 
-I was thinking about distinguishing these methods and code logic in fervid. Now that fervid only provides one method, can we achieve consistent behavior with compiler-sfc?
+about distinguishing these methods and code logic in fervid. Now that fervid only provides one method, can we achieve consistent behavior with compiler-sfc?
 
-I am thinking that without considering caching and ssr in the first step, we need to implement the following method
-
+that without considering caching and ssr in the first step, we need to implement the following method
 
 - compiler.compileScript (generate script code main `__sfc_main`)
 - compiler.compileTemplate (generate template code)
 - compiler.compileStyle (generate style code)
 - compiler.parse (generate descriptor)
+
+# Part Two core compiler script （WIP）
