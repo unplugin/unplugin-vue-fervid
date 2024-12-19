@@ -11,7 +11,7 @@
   },
   "devDependencies": {
     "unplugin-vue-fervid": "workspace:*",
-    "vite": "^6.0.0",
-    "vite-plugin-inspect": "^0.8.8"
+    "vite": "^6.0.3",
+    "vite-plugin-inspect": "^0.10.3"
   }
 }
