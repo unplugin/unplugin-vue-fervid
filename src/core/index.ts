@@ -365,6 +365,10 @@ export const plugin = createUnplugin<Options | undefined, false>(
 
         output.push(modifiedCode);
 
+        // The role of hmrId
+        // TODO track current component instance hmrID
+        // TODO right hmr update with hmrId
+        // TODO hmrId Maintain component status
         output.push(`
         __comp.__hmrId = ${JSON.stringify(id)}
         typeof __VUE_HMR_RUNTIME__ !== 'undefined' && __VUE_HMR_RUNTIME__.createRecord(__comp.__hmrId, __comp)
