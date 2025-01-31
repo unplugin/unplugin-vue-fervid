@@ -327,13 +327,16 @@ export const plugin = createUnplugin<Options | undefined, false>(
         return id.endsWith(".vue");
       },
 
+      load(code, opts) {
+        // TODO split css and js
+      },
+
       transform(code, id) {
+        // TODO sub components compiler error 
         const compileResult = compiler.compileSync(code, {
           id,
           filename: id,
         });
-
-        console.log(compileResult.code)
 
         const output = [];
 
