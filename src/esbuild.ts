@@ -1,3 +1,3 @@
-import { plugin } from "./core/index";
+import { plugin } from './core'
 
-export default plugin.esbuild as typeof plugin.esbuild;
+export default plugin.esbuild as typeof plugin.esbuild

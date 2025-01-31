@@ -1,9 +1,9 @@
-import { formatPostcssSourceMap } from "vite";
-import type { ResolvedOptions } from "./index";
-import type { ExistingRawSourceMap } from "rollup";
-import type { RawSourceMap } from "source-map-js";
-import type { UnpluginContext } from "unplugin";
-import type { SFCDescriptor } from "vue/compiler-sfc";
+import { formatPostcssSourceMap } from 'vite'
+import type { ResolvedOptions } from '.'
+import type { ExistingRawSourceMap } from 'rollup'
+import type { RawSourceMap } from 'source-map-js'
+import type { UnpluginContext } from 'unplugin'
+import type { SFCDescriptor } from 'vue/compiler-sfc'
 
 export async function transformStyle(
   code: string,
@@ -13,7 +13,7 @@ export async function transformStyle(
   context: UnpluginContext,
   filename: string,
 ) {
-  const block = descriptor.styles[index];
+  const block = descriptor.styles[index]
   // vite already handles pre-processors and CSS module so this is only
   // applying SFC-specific transforms like scoped mode and CSS vars rewrite (v-bind(var))
   const result = await options.compiler.compileStyleAsync({
@@ -25,16 +25,16 @@ export async function transformStyle(
     scoped: block.scoped,
     ...(options.cssDevSourcemap
       ? {
-        postcssOptions: {
-          map: {
-            from: filename,
-            inline: false,
-            annotation: false,
+          postcssOptions: {
+            map: {
+              from: filename,
+              inline: false,
+              annotation: false,
+            },
           },
-        },
-      }
+        }
       : {}),
-  });
+  })
 
   if (result.errors.length > 0) {
     result.errors.forEach((error: any) => {
@@ -43,24 +43,24 @@ export async function transformStyle(
           file: descriptor.filename,
           line: error.line + block.loc.start.line,
           column: error.column,
-        };
+        }
       }
-      context.error(error);
-    });
-    return null;
+      context.error(error)
+    })
+    return null
   }
 
   const map = result.map
     ? await formatPostcssSourceMap(
-      // version property of result.map is declared as string
-      // but actually it is a number
-      result.map as Omit<RawSourceMap, "version"> as ExistingRawSourceMap,
-      filename,
-    )
-    : (null as any);
+        // version property of result.map is declared as string
+        // but actually it is a number
+        result.map as Omit<RawSourceMap, 'version'> as ExistingRawSourceMap,
+        filename,
+      )
+    : (null as any)
 
   return {
     code: result.code,
     map,
-  };
+  }
 }

@@ -1,3 +1,3 @@
-import { plugin } from "./core/index";
+import { plugin } from './core'
 
-export default plugin.webpack as typeof plugin.webpack;
+export default plugin.webpack as typeof plugin.webpack

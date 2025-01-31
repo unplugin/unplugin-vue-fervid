@@ -1,9 +1,32 @@
 {
-  "name": "unplugin-vue-fervid",
-  "version": "0.0.1",
-  "packageManager": "pnpm@9.14.2",
-  "description": "Transform Vue 3 SFC to JavaScript with Rust Compiler",
+  "name": "unplugin-vue",
+  "version": "5.2.1",
+  "packageManager": "pnpm@9.15.1",
+  "description": "Transform Vue 3 SFC to JavaScript.",
   "type": "module",
+  "keywords": [
+    "vue",
+    "sfc",
+    "unplugin",
+    "vite",
+    "webpack",
+    "rollup",
+    "esbuild"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/unplugin/unplugin-vue#readme",
+  "bugs": {
+    "url": "https://github.com/unplugin/unplugin-vue/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/unplugin/unplugin-vue.git"
+  },
+  "author": "三咲智子 <sxzz@sxzz.moe>",
+  "files": [
+    "*.d.ts",
+    "dist"
+  ],
   "main": "dist/index.js",
   "module": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -36,10 +59,6 @@
       "require": "./dist/esbuild.cjs",
       "import": "./dist/esbuild.js"
     },
-    "./farm": {
-      "require": "./dist/farm.cjs",
-      "import": "./dist/farm.js"
-    },
     "./api": {
       "require": "./dist/api.cjs",
       "import": "./dist/api.js"
@@ -61,70 +80,46 @@
     "release": "bumpp",
     "lint": "eslint --max-warnings 0 .",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "pnpm run build",
-    "clean": "rimraf node_modules **/*/node_modules"
+    "prepublishOnly": "pnpm run build"
   },
   "peerDependencies": {
     "vue": "^3.2.25"
   },
   "dependencies": {
-    "@fervid/napi": "^0.3.1",
     "@vue/reactivity": "^3.5.13",
-    "debug": "^4.3.7",
+    "debug": "^4.4.0",
+    "@fervid/napi": "^0.3.1",
     "unplugin": "^1.16.0",
-    "vite": "^6.0.0"
+    "vite": "^6.0.6"
   },
   "devDependencies": {
-    "@babel/types": "^7.26.0",
-    "@jridgewell/gen-mapping": "^0.3.5",
+    "@babel/types": "^7.26.3",
+    "@jridgewell/gen-mapping": "^0.3.8",
     "@jridgewell/trace-mapping": "^0.3.25",
-    "@sxzz/eslint-config": "^4.5.0",
+    "@sxzz/eslint-config": "^4.5.1",
     "@sxzz/prettier-config": "^2.0.2",
-    "@sxzz/test-utils": "^0.3.7",
+    "@sxzz/test-utils": "^0.3.11",
     "@types/debug": "^4.1.12",
-    "@types/node": "^22.10.0",
-    "@vitejs/plugin-vue": "5.2.1",
-    "@vitest/ui": "2.1.6",
-    "bumpp": "^9.8.1",
-    "esbuild": "0.24.0",
-    "eslint": "^9.15.0",
+    "@types/node": "^22.10.2",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitest/ui": "^3.0.4",
+    "bumpp": "^9.9.2",
+    "esbuild": "^0.24.2",
+    "eslint": "^9.17.0",
     "fast-glob": "^3.3.2",
     "rimraf": "^6.0.1",
-    "rollup": "^4.27.4",
+    "rollup": "^4.29.1",
     "rollup-plugin-esbuild": "^6.1.1",
     "slash": "^5.1.0",
     "source-map-js": "^1.2.1",
     "tsup": "^8.3.5",
     "typescript": "^5.7.2",
     "unplugin-unused": "^0.2.3",
-    "vitest": "2.1.6",
-    "webpack": "^5.96.1"
+    "vitest": "^3.0.4",
+    "webpack": "^5.97.1"
   },
   "engines": {
     "node": ">=18.0.0"
   },
-  "keywords": [
-    "vue",
-    "sfc",
-    "unplugin",
-    "vite",
-    "webpack",
-    "rollup",
-    "esbuild",
-    "rust"
-  ],
-  "homepage": "https://github.com/unplugin/unplugin-vue-fervid#readme",
-  "bugs": {
-    "url": "https://github.com/unplugin/unplugin-vue-fervid/issues"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/unplugin/unplugin-vue-fervid.git"
-  },
-  "files": [
-    "*.d.ts",
-    "dist"
-  ],
-  "author": "",
-  "license": "MIT"
+  "prettier": "@sxzz/prettier-config"
 }

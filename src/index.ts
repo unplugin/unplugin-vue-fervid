@@ -1,1 +1,1 @@
-export { plugin as default } from './core/index'
+export { plugin as default } from './core'

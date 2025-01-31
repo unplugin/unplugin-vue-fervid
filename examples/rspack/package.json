@@ -1,5 +1,6 @@
 {
   "private": true,
+  "author": "三咲智子 <sxzz@sxzz.moe>",
   "scripts": {
     "serve": "MODE=development rspack serve",
     "build": "rimraf dist && MODE=production rspack build",
@@ -9,12 +10,12 @@
     "vue": "^3.5.13"
   },
   "devDependencies": {
-    "@rspack/cli": "1.1.4",
-    "@rspack/core": "1.1.4",
+    "@rspack/cli": "1.1.8",
+    "@rspack/core": "1.1.8",
     "css-loader": "^7.1.2",
     "serve": "^14.2.4",
     "style-loader": "^4.0.0",
     "ts-node": "^10.9.2",
-    "unplugin-vue-fervid": "workspace:*"
+    "unplugin-vue": "workspace:*"
   }
 }
