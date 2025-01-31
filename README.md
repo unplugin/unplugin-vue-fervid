@@ -11,6 +11,28 @@ Due to the need to consider `performance` and `compatibility` issues, `fervid` n
 #### playground: [Fervid Playground](https://phoenix-ru.github.io/fervid/)
 
 
+#### Configuration
+
+> [!IMPORTANT]
+> Currently, hmr can only be compiled for root components
+
+<details>
+<summary>Vite</summary><br>
+
+```ts
+// vite.config.ts
+import Vue from 'unplugin-vue-fervid/vite'
+
+export default defineConfig({
+  plugins: [
+    Vue({ /* options */ }),
+  ],
+})
+```
+
+<br></details>
+
+
 # Part One main process
 
 this is my current understanding of the vue compilation process
