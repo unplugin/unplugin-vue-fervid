@@ -40,7 +40,7 @@ Benchmarking in Node.js has been done using [`benny`](https://github.com/caderek
 #### playground: [Fervid Playground](https://phoenix-ru.github.io/fervid/)
 
 > [!WARNING]
-> The function is still being tested and he is not ready to apply it to production
+> The function is still being tested and he is not ready to apply it to production and only supports vue 3.
 
 
 #### Configuration
@@ -75,6 +75,7 @@ export default defineConfig({
 - [@vitejs/plugin-vue2](https://github.com/vitejs/vite-plugin-vue2) - For Vite and Vue 2.
 - [unplugin-vue2](https://github.com/unplugin/unplugin-vue2) - For Vue 2.7+ and Vite, esbuild, Rollup, Webpack or more.
 - [vue-loader](https://github.com/vuejs/vue-loader) - For Webpack.
+- [unplugin-vue](https://github.com/unplugin/unplugin-vue) - ✨ Transform Vue 3 SFC to JavaScript. Supports Vite, esbuild, Rollup, Webpack and more.
 - [esbuild-plugin-vue](https://github.com/egoist/esbuild-plugin-vue) - For esbuild and Vue 3.
 - [esbuild-vue](https://github.com/apeschar/esbuild-vue) - For esbuild and Vue 2.
 - ~~[vite-plugin-vue2](https://github.com/underfin/vite-plugin-vue2) - For Vite and Vue 2.~~
