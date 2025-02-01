@@ -325,10 +325,12 @@ export const plugin = createUnplugin<Options | undefined, false>(
       },
 
       resolveId(id) {
+        //  TODO optimize filter vue query
         return id.endsWith('.vue')
       },
 
       loadInclude(id) {
+        //  TODO optimize filter vue query
         const { query } = parseVueRequest(id)
         return query.vue || id.endsWith('.vue')
       },
@@ -354,6 +356,7 @@ export const plugin = createUnplugin<Options | undefined, false>(
       },
 
       transformInclude(id) {
+        //  TODO optimize filter vue query
         const { query } = parseVueRequest(id)
         return query.vue || id.endsWith('.vue')
       },
