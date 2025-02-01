@@ -8,12 +8,48 @@ Due to the need to consider `performance` and `compatibility` issues, `fervid` n
 > 🚧 Working in Progress.
 > May be break changes in the future. The final implementation goal should be consistent with the vue compiler behavior
 
+## Is it fast?
+Yes, it is incredibly fast. In fact, below is a benchmark run for a [test component](crates/fervid/benches/fixtures/input.vue).
+
+```
+  @vue/compiler-sfc:
+    954 ops/s, ±1.15%     | slowest, 98.42% slower
+
+  @fervid/napi sync:
+    6 464 ops/s, ±0.08%   | 89.29% slower
+
+  @fervid/napi async (4 threads):
+    11 624 ops/s, ±2.12%  | 80.73% slower
+
+  @fervid/napi async CPUS (23 threads):
+    60 329 ops/s, ±0.67%  | fastest
+```
+
+<!-- 
+| Action                     | Mean time    |
+|----------------------------|--------------|
+| Parsing                    | 5.58µs       |
+| Code generation: CSR + DEV | 16.26µs      | -->
+
+> Note: results are for AMD Ryzen 9 7900X running on Fedora 38 with kernel version 6.5.9
+
+<!-- Micro-benchmarking has been done using Criterion, code for benchmarks can be found in `benches` directory. -->
+Benchmarking in Node.js has been done using [`benny`](https://github.com/caderek/benny), slightly modified to take `libuv` threads into consideration.
+[Source code for a benchmark](crates/fervid_napi/benchmark/bench.ts).
+
 #### playground: [Fervid Playground](https://phoenix-ru.github.io/fervid/)
+
+> [!WARNING]
+> The function is still being tested and he is not ready to apply it to production
+
 
 #### Configuration
 
 > [!IMPORTANT]
-> Currently only be compiled for root components and support hmr
+> roadmap
+> - [x] support Hmr
+> - [x] support css compile
+> - [ ] support other frameworks
 
 <details>
 <summary>Vite</summary><br>
