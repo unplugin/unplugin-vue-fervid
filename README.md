@@ -14,7 +14,10 @@ Due to the need to consider `performance` and `compatibility` issues, `fervid` n
 #### Configuration
 
 > [!IMPORTANT]
-> Currently only be compiled for root components and support hmr
+> TODOLIST
+> [x] support Hmr
+> [x] support css compile
+> [ ] support other frameworks
 
 <details>
 <summary>Vite</summary><br>
