@@ -10,11 +10,14 @@ Due to the need to consider `performance` and `compatibility` issues, `fervid` n
 
 #### playground: [Fervid Playground](https://phoenix-ru.github.io/fervid/)
 
+> [!WARNING]
+> The function is still being tested and he is not ready to apply it to production
+
 
 #### Configuration
 
 > [!IMPORTANT]
-> TODO
+> roadmap
 > - [x] support Hmr
 > - [x] support css compile
 > - [ ] support other frameworks
