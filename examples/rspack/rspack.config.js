@@ -1,6 +1,6 @@
 const process = require('node:process')
 const rspack = require('@rspack/core')
-const Vue = require('unplugin-vue/rspack')
+const Vue = require('unplugin-vue-fervid/rspack')
 
 /** @type {import('@rspack/core').Configuration} */
 const config = {

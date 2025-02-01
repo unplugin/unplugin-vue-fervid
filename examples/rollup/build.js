@@ -1,6 +1,6 @@
 import { rollup } from 'rollup'
 import esbuild from 'rollup-plugin-esbuild'
-import Vue from 'unplugin-vue/rollup'
+import Vue from 'unplugin-vue-fervid/rollup'
 
 const bundle = await rollup({
   input: ['./src/main.ts'],

@@ -1,6 +1,6 @@
 import process from 'node:process'
 import HtmlWebpackPlugin from 'html-webpack-plugin'
-import Vue from 'unplugin-vue/webpack'
+import Vue from 'unplugin-vue-fervid/webpack'
 import type { Configuration } from 'webpack'
 
 const config: Configuration = {

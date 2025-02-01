@@ -12,6 +12,6 @@
   "devDependencies": {
     "rolldown": "^0.15.1",
     "serve": "^14.2.4",
-    "unplugin-vue": "workspace:*"
+    "unplugin-vue-fervid": "workspace:*"
   }
 }
