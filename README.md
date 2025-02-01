@@ -14,10 +14,10 @@ Due to the need to consider `performance` and `compatibility` issues, `fervid` n
 #### Configuration
 
 > [!IMPORTANT]
-> TODOLIST
-> [x] support Hmr
-> [x] support css compile
-> [ ] support other frameworks
+> TODO
+> - [x] support Hmr
+> - [x] support css compile
+> - [ ] support other frameworks
 
 <details>
 <summary>Vite</summary><br>
