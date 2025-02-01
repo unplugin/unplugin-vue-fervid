@@ -14,7 +14,7 @@ Due to the need to consider `performance` and `compatibility` issues, `fervid` n
 #### Configuration
 
 > [!IMPORTANT]
-> Currently, hmr can only be compiled for root components
+> Currently only be compiled for root components and support hmr
 
 <details>
 <summary>Vite</summary><br>
