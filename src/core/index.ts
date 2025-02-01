@@ -1,131 +1,131 @@
-import fs from "node:fs";
-import process from "node:process";
-import { Compiler } from "@fervid/napi";
-import { computed, shallowRef } from "@vue/reactivity";
+import fs from 'node:fs'
+import process from 'node:process'
+import { Compiler } from '@fervid/napi'
+import { computed, shallowRef } from '@vue/reactivity'
 import {
   createUnplugin,
   type UnpluginContext,
   type UnpluginContextMeta,
-} from "unplugin";
-import { createFilter, normalizePath, type ViteDevServer } from "vite";
-import { version } from "../../package.json";
-import { resolveCompiler } from "../core/compiler";
-import { EXPORT_HELPER_ID, helperCode } from "../core/helper";
-import { transformMain } from "../core/main";
+} from 'unplugin'
+import { createFilter, normalizePath, type ViteDevServer } from 'vite'
+import { version } from '../../package.json'
+import { resolveCompiler } from '../core/compiler'
+import { EXPORT_HELPER_ID, helperCode } from '../core/helper'
+import { transformMain } from '../core/main'
 import {
   clearScriptCache,
   resolveScript,
   typeDepToSFCMap,
-} from "../core/script";
-import { transformStyle } from "../core/style";
-import { transformTemplateAsModule } from "../core/template";
-import { handleHotUpdate, handleTypeDepChange } from "./handleHotUpdate";
+} from '../core/script'
+import { transformStyle } from '../core/style'
+import { transformTemplateAsModule } from '../core/template'
+import { handleHotUpdate, handleTypeDepChange } from './handleHotUpdate'
 import {
   getDescriptor,
   getSrcDescriptor,
   getTempSrcDescriptor,
-} from "./utils/descriptorCache";
-import { parseVueRequest } from "./utils/query";
+} from './utils/descriptorCache'
+import { parseVueRequest } from './utils/query'
 import type {
   SFCBlock,
   SFCScriptCompileOptions,
   SFCStyleCompileOptions,
   SFCTemplateCompileOptions,
-} from "vue/compiler-sfc";
-import type * as _compiler from "vue/compiler-sfc";
+} from 'vue/compiler-sfc'
+import type * as _compiler from 'vue/compiler-sfc'
 
-export { parseVueRequest, type VueQuery } from "./utils/query";
+export { parseVueRequest, type VueQuery } from './utils/query'
 
 export interface Options {
-  include?: string | RegExp | (string | RegExp)[];
-  exclude?: string | RegExp | (string | RegExp)[];
+  include?: string | RegExp | (string | RegExp)[]
+  exclude?: string | RegExp | (string | RegExp)[]
 
-  isProduction?: boolean;
-  ssr?: boolean;
-  sourceMap?: boolean;
-  root?: string;
+  isProduction?: boolean
+  ssr?: boolean
+  sourceMap?: boolean
+  root?: string
 
   // options to pass on to vue/compiler-sfc
   script?: Partial<
     Omit<
       SFCScriptCompileOptions,
-      | "id"
-      | "isProd"
-      | "inlineTemplate"
-      | "templateOptions"
-      | "sourceMap"
-      | "genDefaultAs"
-      | "customElement"
-      | "defineModel"
-      | "propsDestructure"
+      | 'id'
+      | 'isProd'
+      | 'inlineTemplate'
+      | 'templateOptions'
+      | 'sourceMap'
+      | 'genDefaultAs'
+      | 'customElement'
+      | 'defineModel'
+      | 'propsDestructure'
     >
   > & {
     /**
      * @deprecated defineModel is now a stable feature and always enabled if
      * using Vue 3.4 or above.
      */
-    defineModel?: boolean;
+    defineModel?: boolean
     /**
      * @deprecated moved to `features.propsDestructure`.
      */
-    propsDestructure?: boolean;
-  };
+    propsDestructure?: boolean
+  }
   template?: Partial<
     Omit<
       SFCTemplateCompileOptions,
-      | "id"
-      | "source"
-      | "ast"
-      | "filename"
-      | "scoped"
-      | "slotted"
-      | "isProd"
-      | "inMap"
-      | "ssr"
-      | "ssrCssVars"
-      | "preprocessLang"
+      | 'id'
+      | 'source'
+      | 'ast'
+      | 'filename'
+      | 'scoped'
+      | 'slotted'
+      | 'isProd'
+      | 'inMap'
+      | 'ssr'
+      | 'ssrCssVars'
+      | 'preprocessLang'
     >
-  >;
+  >
   style?: Partial<
     Omit<
       SFCStyleCompileOptions,
-      | "filename"
-      | "id"
-      | "isProd"
-      | "source"
-      | "scoped"
-      | "cssDevSourcemap"
-      | "postcssOptions"
-      | "map"
+      | 'filename'
+      | 'id'
+      | 'isProd'
+      | 'source'
+      | 'scoped'
+      | 'cssDevSourcemap'
+      | 'postcssOptions'
+      | 'map'
     >
-  >;
+  >
 
   /**
    * @deprecated moved to `features.customElement`.
    */
-  customElement?: boolean | string | RegExp | (string | RegExp)[];
+  customElement?: boolean | string | RegExp | (string | RegExp)[]
 
   /**
    * Use custom compiler-sfc instance. Can be used to force a specific version.
    */
-  compiler?: typeof _compiler;
+  compiler?: typeof _compiler
 
   /**
    * @default true
    */
-  inlineTemplate?: boolean;
+  inlineTemplate?: boolean
 
   features?: {
-    optionsAPI?: boolean;
-    prodDevtools?: boolean;
-    prodHydrationMismatchDetails?: boolean;
+    optionsAPI?: boolean
+    prodDevtools?: boolean
+    prodHydrationMismatchDetails?: boolean
     /**
      * Enable reactive destructure for `defineProps`.
      * - Available in Vue 3.4 and later.
      * - Defaults to true in Vue 3.5+
      * - Defaults to false in Vue 3.4 (**experimental**)
      */
-    propsDestructure?: boolean;
+    propsDestructure?: boolean
     /**
      * Transform Vue SFCs into custom elements.
      * - `true`: all `*.vue` imports are converted into custom elements
@@ -133,7 +133,7 @@ export interface Options {
      *
      * @default /\.ce\.vue$/
      */
-    customElement?: boolean | string | RegExp | (string | RegExp)[];
+    customElement?: boolean | string | RegExp | (string | RegExp)[]
     /**
      * Customize the component ID generation strategy.
      * - `'filepath'`: hash the file path (relative to the project root)
@@ -143,43 +143,43 @@ export interface Options {
      * - **default:** `'filepath'` in development, `'filepath-source'` in production
      */
     componentIdGenerator?:
-    | "filepath"
-    | "filepath-source"
+    | 'filepath'
+    | 'filepath-source'
     | ((
       filepath: string,
       source: string,
       isProduction: boolean | undefined,
       getHash: (text: string) => string,
-    ) => string);
-  };
+    ) => string)
+  }
 }
 
-export type Context = UnpluginContext & UnpluginContextMeta;
+export type Context = UnpluginContext & UnpluginContextMeta
 
-export type ResolvedOptions = Omit<Options, "customElement"> &
+export type ResolvedOptions = Omit<Options, 'customElement'> &
   Required<
     Pick<
       Options,
-      | "include"
-      | "isProduction"
-      | "ssr"
-      | "sourceMap"
-      | "root"
-      | "compiler"
-      | "inlineTemplate"
-      | "features"
+      | 'include'
+      | 'isProduction'
+      | 'ssr'
+      | 'sourceMap'
+      | 'root'
+      | 'compiler'
+      | 'inlineTemplate'
+      | 'features'
     >
   > & {
     /** Vite only */
-    devServer?: ViteDevServer;
-    devToolsEnabled?: boolean;
-    cssDevSourcemap: boolean;
-  };
+    devServer?: ViteDevServer
+    devToolsEnabled?: boolean
+    cssDevSourcemap: boolean
+  }
 
 function resolveOptions(rawOptions: Options): ResolvedOptions {
-  const root = rawOptions.root ?? process.cwd();
+  const root = rawOptions.root ?? process.cwd()
   const isProduction =
-    rawOptions.isProduction ?? process.env.NODE_ENV === "production";
+    rawOptions.isProduction ?? process.env.NODE_ENV === 'production'
   const features = {
     ...rawOptions.features,
     optionsAPI: true,
@@ -189,7 +189,7 @@ function resolveOptions(rawOptions: Options): ResolvedOptions {
     customElement:
       (rawOptions.features?.customElement || rawOptions.customElement) ??
       /\.ce\.vue$/,
-  };
+  }
 
   return {
     ...rawOptions,
@@ -203,63 +203,63 @@ function resolveOptions(rawOptions: Options): ResolvedOptions {
     cssDevSourcemap: false,
     inlineTemplate: rawOptions.inlineTemplate ?? true,
     features,
-  };
+  }
 }
 
 export const plugin = createUnplugin<Options | undefined, false>(
   (rawOptions = {}, meta) => {
-    clearScriptCache();
+    clearScriptCache()
 
-    const options = shallowRef(resolveOptions(rawOptions));
+    const options = shallowRef(resolveOptions(rawOptions))
 
     const filter = computed(() =>
       createFilter(options.value.include, options.value.exclude),
-    );
+    )
 
     const customElementFilter = computed(() => {
-      const customElement = options.value.features.customElement;
-      return typeof customElement === "boolean"
+      const customElement = options.value.features.customElement
+      return typeof customElement === 'boolean'
         ? () => customElement as boolean
-        : createFilter(customElement);
-    });
+        : createFilter(customElement)
+    })
 
-    let compiler: Compiler;
+    let compiler: Compiler
 
     const api = {
       get options() {
-        return options.value;
+        return options.value
       },
       set options(value) {
-        options.value = value;
+        options.value = value
       },
       version,
-    };
+    }
 
     return {
-      name: "unplugin-vue",
+      name: 'unplugin-vue',
 
       vite: {
         api,
         handleHotUpdate(ctx) {
-          if (!ctx.file.endsWith(".vue")) {
-            return;
+          if (!ctx.file.endsWith('.vue')) {
+            return
           }
 
-          const modules = ctx.modules;
+          const modules = ctx.modules
 
           ctx.server.ws.send({
-            type: "custom",
-            event: "file-changed",
+            type: 'custom',
+            event: 'file-changed',
             data: { file: ctx.file },
-          });
+          })
 
-          return modules;
+          return modules
         },
 
         config(config) {
           return {
             resolve: {
-              dedupe: config.build?.ssr ? [] : ["vue"],
+              dedupe: config.build?.ssr ? [] : ['vue'],
             },
             define: {
               __VUE_OPTIONS_API__: !!(
@@ -278,10 +278,10 @@ export const plugin = createUnplugin<Options | undefined, false>(
             ssr: {
               // @ts-ignore -- config.legacy.buildSsrCjsExternalHeuristics will be removed in Vite 5
               external: config.legacy?.buildSsrCjsExternalHeuristics
-                ? ["vue", "@vue/server-renderer"]
+                ? ['vue', '@vue/server-renderer']
                 : [],
             },
-          };
+          }
         },
 
         configResolved(config) {
@@ -289,7 +289,7 @@ export const plugin = createUnplugin<Options | undefined, false>(
             ...options.value,
             root: config.root,
             sourceMap:
-              config.command === "build" ? !!config.build.sourcemap : true,
+              config.command === 'build' ? !!config.build.sourcemap : true,
             cssDevSourcemap: config.css?.devSourcemap ?? false,
             isProduction: config.isProduction,
             compiler: options.value.compiler || resolveCompiler(config.root),
@@ -298,11 +298,11 @@ export const plugin = createUnplugin<Options | undefined, false>(
               config.define!.__VUE_PROD_DEVTOOLS__ ||
               !config.isProduction
             ),
-          };
+          }
         },
 
         configureServer(server) {
-          options.value.devServer = server;
+          options.value.devServer = server
         },
       },
 
@@ -313,32 +313,72 @@ export const plugin = createUnplugin<Options | undefined, false>(
       rolldown: {
         api,
         options(opt) {
-          opt.moduleTypes ||= {};
-          opt.moduleTypes.vue ||= "js";
+          opt.moduleTypes ||= {}
+          opt.moduleTypes.vue ||= 'js'
         },
       },
 
       buildStart() {
         compiler = new Compiler({
           isProduction: options.value.isProduction,
-        });
-      },
-      transformInclude(id) {
-        return id.endsWith(".vue");
+        })
       },
 
-      load(code, opts) {
-        // TODO split css and js
+      resolveId(id) {
+        return id.endsWith('.vue')
+      },
+
+      loadInclude(id) {
+        const { query } = parseVueRequest(id)
+        return query.vue || id.endsWith('.vue')
+      },
+
+      load(id) {
+        const { query } = parseVueRequest(id)
+        if (query.vue) {
+          let block = ""
+          const cleanedId = id.split('?')[0];
+          const code = fs.readFileSync(cleanedId, 'utf-8')
+          const compileResult = compiler.compileSync(code, {
+            id: cleanedId,
+            filename: cleanedId,
+          })
+
+          if (query.type === 'style') {
+            block = compileResult.styles[query.index]
+
+          }
+
+          return block.code
+        }
+      },
+
+      transformInclude(id) {
+        const { query } = parseVueRequest(id)
+        return query.vue || id.endsWith('.vue')
       },
 
       transform(code, id) {
-        // TODO sub components compiler error 
         const compileResult = compiler.compileSync(code, {
           id,
           filename: id,
-        });
+        })
+        const { query } = parseVueRequest(id)
 
-        const output = [];
+        if (query.type === 'style') {
+          return {
+            code,
+          }
+        }
+
+        const output = []
+
+        if (compileResult.styles.length) {
+          for (let i = 0; i < compileResult.styles.length; i++) {
+            const styleVirtualId = `${id}?vue&type=style&index=${i}&isScoped=${compileResult.styles[i].isScoped}&lang.${compileResult.styles[i].lang}`;
+            output.push(`import "${styleVirtualId}";`);
+          }
+        }
 
         output.push(`
             import.meta.hot.on('file-changed', ({ file }) => {
@@ -357,13 +397,13 @@ export const plugin = createUnplugin<Options | undefined, false>(
           `)
 
         const modifiedCode = compileResult.code.replace(
-          "export default",
+          'export default',
           `
           const __comp =
           `,
-        );
+        )
 
-        output.push(modifiedCode);
+        output.push(modifiedCode)
 
         // The role of hmrId
         // TODO track current component instance hmrID
@@ -374,10 +414,10 @@ export const plugin = createUnplugin<Options | undefined, false>(
         typeof __VUE_HMR_RUNTIME__ !== 'undefined' && __VUE_HMR_RUNTIME__.createRecord(__comp.__hmrId, __comp)
 
         export default __comp
-          `);
+          `)
 
-        return output.join("\n");
+        return output.join('\n')
       },
-    };
+    }
   },
-);
+)

@@ -11,7 +11,7 @@ const toggleMessage = () => {
 
 <template>
   <div class="container">
-    <h1>Basic Vue Example</h1>
+    <h1>Basic Vue</h1>
     <button @click="toggleMessage">Toggle Message</button>
     <p v-if="isVisible">{{ message }}</p>
   </div>

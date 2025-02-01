@@ -1,8 +1,8 @@
 {
   "name": "unplugin-vue-fervid",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "packageManager": "pnpm@9.15.1",
-  "description": "Transform Vue 3 SFC to JavaScript.",
+  "description": "Transform Vue 3 SFC to JavaScript written in Rust.",
   "type": "module",
   "keywords": [
     "vue",

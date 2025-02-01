@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from "vue";
-import Base from "./base.vue";
+import BaseCmp from "./base.vue";
 const msg = ref("12312312312312313");
 watch(msg, (newVal) => {
   console.log(newVal);
@@ -10,7 +10,7 @@ const count = ref(0);
 
 <template>
   <div>
-    <Base />
+    <BaseCmp />
     <button @click="count++">count++</button>
     {{ count }}
     <h1>Hello world</h1>
@@ -22,5 +22,11 @@ const count = ref(0);
 <style>
 input {
   color: #fba;
+}
+</style>
+
+<style scoped>
+button {
+  color: #abf;
 }
 </style>
