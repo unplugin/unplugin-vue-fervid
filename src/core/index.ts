@@ -339,6 +339,7 @@ export const plugin = createUnplugin<Options | undefined, false>(
       },
 
       load(id) {
+        // processCss scss less css 
         const { query } = parseVueRequest(id)
         if (query.vue) {
           const cleanedId = id.split('?')[0]
@@ -398,7 +399,8 @@ export const plugin = createUnplugin<Options | undefined, false>(
           }
         }
 
-        output.push(`
+        if (!options.value.isProduction) {
+          output.push(`
             import.meta.hot.on('file-changed', ({ file }) => {
               __VUE_HMR_RUNTIME__.CHANGED_FILE = file
             })
@@ -413,6 +415,7 @@ export const plugin = createUnplugin<Options | undefined, false>(
               }
             })
           `)
+        }
 
         const modifiedCode = compileResult.code.replace(
           'export default',
