@@ -49,6 +49,8 @@ Benchmarking in Node.js has been done using [`benny`](https://github.com/caderek
 > roadmap
 > - [x] support Hmr
 > - [x] support css compile
+> - [ ] type options
+> - [ ] known bugs
 > - [ ] support other frameworks
 
 <details>
