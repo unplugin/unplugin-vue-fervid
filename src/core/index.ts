@@ -358,7 +358,7 @@ export const plugin = createUnplugin<Options | undefined, false>(
             const styleIndex = Number(query.index)
             const styleBlock = compileResult.styles[styleIndex]
             return {
-              code: styleBlock.code,
+              code: styleBlock?.code,
               map: styleBlock.map || undefined,
             }
           }
