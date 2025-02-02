@@ -40,7 +40,7 @@ Benchmarking in Node.js has been done using [`benny`](https://github.com/caderek
 #### playground: [Fervid Playground](https://phoenix-ru.github.io/fervid/)
 
 > [!WARNING]
-> this project is still being tested and he is not ready to apply it to production and only supports vue 3.
+> this project is still being tested and not ready to apply it to production and only supports vue 3.
 
 
 #### Configuration
