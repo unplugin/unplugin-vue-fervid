@@ -19,6 +19,7 @@ import {
 } from '../core/script'
 import { transformStyle } from '../core/style'
 import { transformTemplateAsModule } from '../core/template'
+import { createDebug } from './debug'
 import { handleHotUpdate, handleTypeDepChange } from './handleHotUpdate'
 import {
   getDescriptor,
@@ -33,6 +34,8 @@ import type {
   SFCTemplateCompileOptions,
 } from 'vue/compiler-sfc'
 import type * as _compiler from 'vue/compiler-sfc'
+
+const log = createDebug('unplugin-vue-fervid:compile')
 
 export { parseVueRequest, type VueQuery } from './utils/query'
 
@@ -338,20 +341,26 @@ export const plugin = createUnplugin<Options | undefined, false>(
       load(id) {
         const { query } = parseVueRequest(id)
         if (query.vue) {
-          let block = ""
-          const cleanedId = id.split('?')[0];
+          const cleanedId = id.split('?')[0]
           const code = fs.readFileSync(cleanedId, 'utf-8')
+          const timeStart = performance.now()
           const compileResult = compiler.compileSync(code, {
             id: cleanedId,
             filename: cleanedId,
           })
+          const timeEnd = performance.now() - timeStart
+          log(
+            `compileSync ${cleanedId} in \u001B[1m\u001B[35m${timeEnd.toFixed(2)} ms\u001B[0m`,
+          )
 
           if (query.type === 'style') {
-            block = compileResult.styles[query.index]
-
+            const styleIndex = Number(query.index)
+            const styleBlock = compileResult.styles[styleIndex]
+            return {
+              code: styleBlock.code,
+              map: styleBlock.map || undefined,
+            }
           }
-
-          return block.code
         }
       },
 
@@ -362,10 +371,16 @@ export const plugin = createUnplugin<Options | undefined, false>(
       },
 
       transform(code, id) {
+        const timeStart = performance.now()
+
         const compileResult = compiler.compileSync(code, {
           id,
           filename: id,
         })
+        const timeEnd = performance.now() - timeStart
+        log(
+          `compileSync ${id} in \u001B[1m\u001B[35m${timeEnd.toFixed(2)} ms\u001B[0m`,
+        )
         const { query } = parseVueRequest(id)
 
         if (query.type === 'style') {
@@ -378,8 +393,8 @@ export const plugin = createUnplugin<Options | undefined, false>(
 
         if (compileResult.styles.length) {
           for (let i = 0; i < compileResult.styles.length; i++) {
-            const styleVirtualId = `${id}?vue&type=style&index=${i}&isScoped=${compileResult.styles[i].isScoped}&lang.${compileResult.styles[i].lang}`;
-            output.push(`import "${styleVirtualId}";`);
+            const styleVirtualId = `${id}?vue&type=style&index=${i}&isScoped=${compileResult.styles[i].isScoped}&lang.${compileResult.styles[i].lang}`
+            output.push(`import "${styleVirtualId}";`)
           }
         }
 

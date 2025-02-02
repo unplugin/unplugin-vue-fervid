@@ -1,63 +1,66 @@
 <script setup lang="ts">
-import { ref, watch } from "vue";
-import BaseCmp from "./base.vue";
-const msg = ref("Welcome to my beautiful page!");
+import { ref, watch } from 'vue'
+import vite from '../public/vite.svg'
+import vue from '/vue.svg'
+import vue2 from '../assets/vue.svg'
+import BaseCmp from './base.vue'
+const msg = ref('Welcome to my beautiful page!')
 watch(msg, (newVal) => {
-  console.log(newVal);
-});
-const count = ref(0);
-const animeTitle = ref("Magical Adventure");
+  console.log(newVal)
+})
+const count = ref(0)
+const animeTitle = ref('Magical Adventure')
 const episodes = ref([
-  { id: 1, title: "The Beginning", thumbnail: "/ep1.jpg" },
-  { id: 2, title: "New Powers", thumbnail: "/ep2.jpg" },
-  { id: 3, title: "The Challenge", thumbnail: "/ep3.jpg" },
-]);
+  { id: 1, title: 'The Beginning', thumbnail: '/ep1.jpg' },
+  { id: 2, title: 'New Powers', thumbnail: '/ep2.jpg' },
+  { id: 3, title: 'The Challenge', thumbnail: '/ep3.jpg' },
+])
 
 const newsItems = ref([
   {
-    date: "2024-02-15",
-    title: "Season 2 Announcement!",
-    content: "We're excited to announce that season 2 is in production!"
+    date: '2024-02-15',
+    title: 'Season 2 Announcement!',
+    content: "We're excited to announce that season 2 is in production!",
   },
   {
-    date: "2024-02-10",
-    title: "Character Design Contest",
-    content: "Join our contest to design a new character for the show!"
-  }
-]);
+    date: '2024-02-10',
+    title: 'Character Design Contest',
+    content: 'Join our contest to design a new character for the show!',
+  },
+])
 
 const characters = ref([
   {
-    name: "Yuki",
-    role: "Protagonist",
-    description: "A cheerful student with magical powers",
-    image: "/yuki.jpg"
+    name: 'Yuki',
+    role: 'Protagonist',
+    description: 'A cheerful student with magical powers',
+    image: '/yuki.jpg',
   },
   {
-    name: "Kaze",
-    role: "Mentor",
-    description: "A mysterious guide with ancient knowledge",
-    image: "/kaze.jpg"
+    name: 'Kaze',
+    role: 'Mentor',
+    description: 'A mysterious guide with ancient knowledge',
+    image: '/kaze.jpg',
   },
   {
-    name: "Mira",
-    role: "Support",
+    name: 'Mira',
+    role: 'Support',
     description: "Yuki's best friend and trusted ally",
-    image: "/mira.jpg"
-  }
-]);
+    image: '/mira.jpg',
+  },
+])
 
-const currentSection = ref("home");
+const currentSection = ref('home')
 
 const changeSection = (section) => {
-  currentSection.value = section;
-};
+  currentSection.value = section
+}
 
-const isMenuOpen = ref(false);
+const isMenuOpen = ref(false)
 
 const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value;
-};
+  isMenuOpen.value = !isMenuOpen.value
+}
 </script>
 
 <template>
@@ -68,14 +71,20 @@ const toggleMenu = () => {
 
     <main class="main-content">
       <BaseCmp />
-
+      <img width="100" :src="vue" alt="vue" />
+      <img width="100" :src="vue2" alt="vue" />
       <div class="counter-section">
         <button class="btn" @click="count++">Count: {{ count }}</button>
       </div>
-
+      <img width="100" :src="vite" alt="vite" />
       <div class="message-section">
         <h2 class="subtitle">{{ msg }}</h2>
-        <input v-model="msg" type="text" class="input" placeholder="Edit message..." />
+        <input
+          v-model="msg"
+          type="text"
+          class="input"
+          placeholder="Edit message..."
+        />
       </div>
     </main>
   </div>
