@@ -1,3 +1,4 @@
+import { NapiAssetUrlOptions } from './../../node_modules/@fervid/napi/index.d';
 import fs from 'node:fs'
 import process from 'node:process'
 import { Compiler } from '@fervid/napi'
@@ -34,6 +35,8 @@ import type {
   SFCTemplateCompileOptions,
 } from 'vue/compiler-sfc'
 import type * as _compiler from 'vue/compiler-sfc'
+import path from 'node:path';
+import slash from 'slash';
 
 const log = createDebug('unplugin-vue-fervid:compile')
 
@@ -347,8 +350,9 @@ export const plugin = createUnplugin<Options | undefined, false>(
           const timeStart = performance.now()
           const compileResult = compiler.compileSync(code, {
             id: cleanedId,
-            filename: cleanedId,
+            filename: cleanedId
           })
+
           const timeEnd = performance.now() - timeStart
           log(
             `compileSync ${cleanedId} in \u001B[1m\u001B[35m${timeEnd.toFixed(2)} ms\u001B[0m`,
@@ -372,11 +376,39 @@ export const plugin = createUnplugin<Options | undefined, false>(
       },
 
       transform(code, id) {
+        let transformAssetUrls = options.value.template?.transformAssetUrls
+        // compiler-sfc should export `AssetURLOptions`
+        let assetUrlOptions //: AssetURLOptions | undefined
+        if (transformAssetUrls === false) {
+          // if explicitly disabled, let assetUrlOptions be undefined
+        } else if (options.value.devServer) {
+          // during dev, inject vite base so that compiler-sfc can transform
+          // relative paths directly to absolute paths without incurring an extra import
+          // request
+          if (id.startsWith(options.value.root)) {
+            const devBase = options.value.devServer.config.base
+            assetUrlOptions = {
+              base:
+                (options.value.devServer.config.server?.origin ?? '') +
+                devBase +
+                slash(path.relative(options.value.root, path.dirname(id))),
+              includeAbsolute: !!devBase,
+            }
+          }
+        } else {
+          // build: force all asset urls into import requests so that they go through
+          // the assets plugin for asset registration
+          assetUrlOptions = {
+            includeAbsolute: true,
+          }
+        }
+
         const timeStart = performance.now()
 
         const compileResult = compiler.compileSync(code, {
           id,
           filename: id,
+          transformAssetUrls: assetUrlOptions,
         })
         const timeEnd = performance.now() - timeStart
         log(
