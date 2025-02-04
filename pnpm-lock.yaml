@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@fervid/napi':
-        specifier: /Users/adny/rust/fervid/crates/fervid_napi
-        version: link:../../rust/fervid/crates/fervid_napi
+        specifier: ^0.3.1
+        version: 0.3.1
       '@vue/reactivity':
         specifier: ^3.5.13
         version: 3.5.13
@@ -18,8 +18,8 @@ importers:
         specifier: ^4.4.0
         version: 4.4.0
       unplugin:
-        specifier: ^1.16.0
-        version: 1.16.0
+        specifier: ^2.1.2
+        version: 2.1.2
       vite:
         specifier: ^6.0.6
         version: 6.0.6(@types/node@22.10.2)(jiti@2.4.2)(sass@1.83.0)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1)
@@ -671,6 +671,34 @@ packages:
   '@eslint/plugin-kit@0.2.4':
     resolution: {integrity: sha512-zSkKow6H5Kdm0ZUQUB2kV5JIXqoG0+uH5YADhaEHswm664N9Db8dXSi0nMJpacpMf+MyyglF1vnZohpEg5yUtg==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+
+  '@fervid/napi-darwin-arm64@0.3.1':
+    resolution: {integrity: sha512-OpKzLMffImkqGAXXBLktChKJ2dCHnVeHEx2DAz7W5RqKR+X0FqEBzpjE751d5Pp+MBZfmp4Kwa0GBZZ/wQDiNA==}
+    engines: {node: '>= 10'}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@fervid/napi-linux-x64-gnu@0.3.1':
+    resolution: {integrity: sha512-giZiepe8k0UoYl2jOHJ12cc4/HvFga0ii7QE/E3J5fmtpqKk375RqFDYHSsYWJyXzPhQxLKm2BwWcZGdZn+Agw==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@fervid/napi-linux-x64-musl@0.3.1':
+    resolution: {integrity: sha512-mHHu/3cNyECUDYLLJC5k55pZ6jNKgbt+AYr5SvUSC3zU4TnzK2U9oHKElmYXbG83n0zBA5oocVQoZYFv5WicYQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [linux]
+
+  '@fervid/napi-win32-x64-msvc@0.3.1':
+    resolution: {integrity: sha512-shoq3PeKqWM5XnxMLXObjcs1ETH7lU5T3ts6+FZVf4EEPQQtx4YxAUP+sUiA9V+KA0GqENF+l8WWXwt/0TdvpQ==}
+    engines: {node: '>= 10'}
+    cpu: [x64]
+    os: [win32]
+
+  '@fervid/napi@0.3.1':
+    resolution: {integrity: sha512-rLQiQevBWEh0k/i0AANofod2Y75PK5grT/iY1/DJpoVNKW5bkDr1M23CuCz+ZjlbvppoJX1PJVxRsoffooPpDw==}
+    engines: {node: '>= 10'}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -4144,6 +4172,10 @@ packages:
     resolution: {integrity: sha512-5liCNPuJW8dqh3+DM6uNM2EI3MLLpCKp/KY+9pB5M2S2SR2qvvDHhKgBOaTWEbZTAws3CXfB0rKTIolWKL05VQ==}
     engines: {node: '>=14.0.0'}
 
+  unplugin@2.1.2:
+    resolution: {integrity: sha512-Q3LU0e4zxKfRko1wMV2HmP8lB9KWislY7hxXpxd+lGx0PRInE4vhMBVEZwpdVYHvtqzhSrzuIfErsob6bQfCzw==}
+    engines: {node: '>=18.12.0'}
+
   update-browserslist-db@1.1.1:
     resolution: {integrity: sha512-R8UzCaa9Az+38REPiJ1tXlImTJXlVfgHZsglwBD/k6nj76ctsH1E3q4doGrukiLQd3sGQYu56r5+lo5r94l29A==}
     hasBin: true
@@ -4744,6 +4776,25 @@ snapshots:
   '@eslint/plugin-kit@0.2.4':
     dependencies:
       levn: 0.4.1
+
+  '@fervid/napi-darwin-arm64@0.3.1':
+    optional: true
+
+  '@fervid/napi-linux-x64-gnu@0.3.1':
+    optional: true
+
+  '@fervid/napi-linux-x64-musl@0.3.1':
+    optional: true
+
+  '@fervid/napi-win32-x64-msvc@0.3.1':
+    optional: true
+
+  '@fervid/napi@0.3.1':
+    optionalDependencies:
+      '@fervid/napi-darwin-arm64': 0.3.1
+      '@fervid/napi-linux-x64-gnu': 0.3.1
+      '@fervid/napi-linux-x64-musl': 0.3.1
+      '@fervid/napi-win32-x64-msvc': 0.3.1
 
   '@humanfs/core@0.19.1': {}
 
@@ -8609,6 +8660,11 @@ snapshots:
       - rollup
 
   unplugin@1.16.0:
+    dependencies:
+      acorn: 8.14.0
+      webpack-virtual-modules: 0.6.2
+
+  unplugin@2.1.2:
     dependencies:
       acorn: 8.14.0
       webpack-virtual-modules: 0.6.2
