@@ -40,15 +40,16 @@ Benchmarking in Node.js has been done using [`benny`](https://github.com/caderek
 #### playground: [Fervid Playground](https://phoenix-ru.github.io/fervid/)
 
 > [!WARNING]
-> this project is still being tested and not ready to apply it to production and only supports vue 3.
+> this project is still being tested and not ready to apply it to production and only supports vue 3 for now.
 
 
 #### Configuration
 
 > [!IMPORTANT]
-> roadmap
+> roadmap: Some features of this plugin roadmap represent the final fervid implementation of roadmap，View Fervid [roadmap](https://github.com/phoenix-ru/fervid?tab=readme-ov-file#roadmap)
 > - [x] support Hmr
 > - [x] support css compile
+> - [ ] transform sfc assets url
 > - [ ] type options
 > - [ ] known bugs
 > - [ ] support other frameworks
