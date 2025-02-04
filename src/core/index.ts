@@ -410,6 +410,7 @@ export const plugin = createUnplugin<Options | undefined, false>(
           filename: id,
           transformAssetUrls: assetUrlOptions,
         })
+
         const timeEnd = performance.now() - timeStart
         log(
           `compileSync ${id} in \u001B[1m\u001B[35m${timeEnd.toFixed(2)} ms\u001B[0m`,
