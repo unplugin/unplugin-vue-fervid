@@ -46,7 +46,7 @@ Benchmarking in Node.js has been done using [`benny`](https://github.com/caderek
 #### Configuration
 
 > [!IMPORTANT]
-> roadmap
+> roadmap: Some features of this plugin roadmap represent the final fervid implementation of roadmap，View Fervid [roadmap](https://github.com/phoenix-ru/fervid?tab=readme-ov-file#roadmap)
 > - [x] support Hmr
 > - [x] support css compile
 > - [ ] transform sfc assets url
