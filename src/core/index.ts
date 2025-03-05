@@ -1,4 +1,3 @@
-import { NapiAssetUrlOptions } from './../../node_modules/@fervid/napi/index.d';
 import fs from 'node:fs'
 import process from 'node:process'
 import { Compiler } from '@fervid/napi'
