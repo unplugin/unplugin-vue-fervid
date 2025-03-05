@@ -41,6 +41,7 @@ Benchmarking in Node.js has been done using [`benny`](https://github.com/caderek
 
 > [!WARNING]
 > this project is still being tested and not ready to apply it to production and only supports vue 3 for now.
+> The current problem is that if you want to contribute in fervid, you need to start fervid synchronously for local development.
 
 
 #### Configuration
