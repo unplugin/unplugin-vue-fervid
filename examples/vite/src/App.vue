@@ -11,6 +11,7 @@ function counter() {
 
 <template>
   <div>Im testing</div>
+  <img src="./assets/aaa.jpg" width="100" height="100" alt="logo" />
   <button type="button" @click="counter">count1 is {{ count }}</button>
   <HelloWorld />
 </template>
