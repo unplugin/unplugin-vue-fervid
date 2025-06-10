@@ -13,7 +13,12 @@
   },
   "devDependencies": {
     "unplugin-vue-fervid": "workspace:*",
-    "vite": "^6.0.6",
+    "vite": "npm:rolldown-vite@latest",
     "vite-plugin-inspect": "^10.0.6"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:rolldown-vite@latest"
+    }
   }
 }
