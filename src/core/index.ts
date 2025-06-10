@@ -341,21 +341,15 @@ export const plugin = createUnplugin<Options | undefined, false>(
       },
 
       load(id) {
-        // processCss scss less css 
+        // processCss scss less css
         const { query } = parseVueRequest(id)
         if (query.vue) {
           const cleanedId = id.split('?')[0]
           const code = fs.readFileSync(cleanedId, 'utf-8')
-          const timeStart = performance.now()
           const compileResult = compiler.compileSync(code, {
             id: cleanedId,
             filename: cleanedId
           })
-
-          const timeEnd = performance.now() - timeStart
-          log(
-            `compileSync ${cleanedId} in \u001B[1m\u001B[35m${timeEnd.toFixed(2)} ms\u001B[0m`,
-          )
 
           if (query.type === 'style') {
             const styleIndex = Number(query.index)
@@ -375,7 +369,7 @@ export const plugin = createUnplugin<Options | undefined, false>(
       },
 
       transform(code, id) {
-        let transformAssetUrls = options.value.template?.transformAssetUrls
+        const transformAssetUrls = options.value.template?.transformAssetUrls
         // compiler-sfc should export `AssetURLOptions`
         let assetUrlOptions //: AssetURLOptions | undefined
         if (transformAssetUrls === false) {
@@ -402,18 +396,12 @@ export const plugin = createUnplugin<Options | undefined, false>(
           }
         }
 
-        const timeStart = performance.now()
-
         const compileResult = compiler.compileSync(code, {
           id,
           filename: id,
           transformAssetUrls: assetUrlOptions,
         })
 
-        const timeEnd = performance.now() - timeStart
-        log(
-          `compileSync ${id} in \u001B[1m\u001B[35m${timeEnd.toFixed(2)} ms\u001B[0m`,
-        )
         const { query } = parseVueRequest(id)
 
         if (query.type === 'style') {
