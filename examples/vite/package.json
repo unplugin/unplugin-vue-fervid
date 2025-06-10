@@ -9,6 +9,7 @@
     "build:debug": "cross-env DEBUG=unplugin-vue-fervid:compile vite build"
   },
   "dependencies": {
+    "element-plus": "^2.10.1",
     "vue": "^3.5.13"
   },
   "devDependencies": {

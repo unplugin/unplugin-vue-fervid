@@ -1,7 +1,9 @@
 import fs from 'node:fs'
+import path from 'node:path'
 import process from 'node:process'
 import { Compiler } from '@fervid/napi'
 import { computed, shallowRef } from '@vue/reactivity'
+import slash from 'slash'
 import {
   createUnplugin,
   type UnpluginContext,
@@ -34,8 +36,6 @@ import type {
   SFCTemplateCompileOptions,
 } from 'vue/compiler-sfc'
 import type * as _compiler from 'vue/compiler-sfc'
-import path from 'node:path';
-import slash from 'slash';
 
 const log = createDebug('unplugin-vue-fervid:compile')
 
@@ -148,14 +148,14 @@ export interface Options {
      * - **default:** `'filepath'` in development, `'filepath-source'` in production
      */
     componentIdGenerator?:
-    | 'filepath'
-    | 'filepath-source'
-    | ((
-      filepath: string,
-      source: string,
-      isProduction: boolean | undefined,
-      getHash: (text: string) => string,
-    ) => string)
+      | 'filepath'
+      | 'filepath-source'
+      | ((
+          filepath: string,
+          source: string,
+          isProduction: boolean | undefined,
+          getHash: (text: string) => string,
+        ) => string)
   }
 }
 
@@ -211,6 +211,33 @@ function resolveOptions(rawOptions: Options): ResolvedOptions {
   }
 }
 
+const cleanId = (id: string): string => id.split('?')[0]
+
+const isVueFile = (id: string): boolean => id.endsWith('.vue')
+
+const resolveAssetUrlOptions = (id: string, options: ResolvedOptions) => {
+  const transformAssetUrls = options.template?.transformAssetUrls
+
+  if (transformAssetUrls === false) {
+    return undefined
+  }
+
+  if (options.devServer && id.startsWith(options.root)) {
+    const devBase = options.devServer.config.base
+    return {
+      base:
+        (options.devServer.config.server?.origin ?? '') +
+        devBase +
+        slash(path.relative(options.root, path.dirname(id))),
+      includeAbsolute: !!devBase,
+    }
+  }
+
+  return {
+    includeAbsolute: true,
+  }
+}
+
 export const plugin = createUnplugin<Options | undefined, false>(
   (rawOptions = {}, meta) => {
     clearScriptCache()
@@ -246,19 +273,17 @@ export const plugin = createUnplugin<Options | undefined, false>(
       vite: {
         api,
         handleHotUpdate(ctx) {
-          if (!ctx.file.endsWith('.vue')) {
+          if (!isVueFile(ctx.file)) {
             return
           }
-
-          const modules = ctx.modules
 
           ctx.server.ws.send({
             type: 'custom',
             event: 'file-changed',
-            data: { file: ctx.file },
+            data: { file: normalizePath(ctx.file) },
           })
 
-          return modules
+          return ctx.modules
         },
 
         config(config) {
@@ -330,25 +355,22 @@ export const plugin = createUnplugin<Options | undefined, false>(
       },
 
       resolveId(id) {
-        //  TODO optimize filter vue query
-        return id.endsWith('.vue')
+        return isVueFile(id) ? id : undefined
       },
 
       loadInclude(id) {
-        //  TODO optimize filter vue query
         const { query } = parseVueRequest(id)
-        return query.vue || id.endsWith('.vue')
+        return query.vue || isVueFile(id)
       },
 
       load(id) {
-        // processCss scss less css
         const { query } = parseVueRequest(id)
         if (query.vue) {
-          const cleanedId = id.split('?')[0]
+          const cleanedId = cleanId(id)
           const code = fs.readFileSync(cleanedId, 'utf-8')
           const compileResult = compiler.compileSync(code, {
             id: cleanedId,
-            filename: cleanedId
+            filename: cleanedId,
           })
 
           if (query.type === 'style') {
@@ -356,45 +378,19 @@ export const plugin = createUnplugin<Options | undefined, false>(
             const styleBlock = compileResult.styles[styleIndex]
             return {
               code: styleBlock?.code,
-              map: styleBlock.map || undefined,
+              map: styleBlock?.map || undefined,
             }
           }
         }
       },
 
       transformInclude(id) {
-        //  TODO optimize filter vue query
         const { query } = parseVueRequest(id)
-        return query.vue || id.endsWith('.vue')
+        return query.vue || isVueFile(id)
       },
 
       transform(code, id) {
-        const transformAssetUrls = options.value.template?.transformAssetUrls
-        // compiler-sfc should export `AssetURLOptions`
-        let assetUrlOptions //: AssetURLOptions | undefined
-        if (transformAssetUrls === false) {
-          // if explicitly disabled, let assetUrlOptions be undefined
-        } else if (options.value.devServer) {
-          // during dev, inject vite base so that compiler-sfc can transform
-          // relative paths directly to absolute paths without incurring an extra import
-          // request
-          if (id.startsWith(options.value.root)) {
-            const devBase = options.value.devServer.config.base
-            assetUrlOptions = {
-              base:
-                (options.value.devServer.config.server?.origin ?? '') +
-                devBase +
-                slash(path.relative(options.value.root, path.dirname(id))),
-              includeAbsolute: !!devBase,
-            }
-          }
-        } else {
-          // build: force all asset urls into import requests so that they go through
-          // the assets plugin for asset registration
-          assetUrlOptions = {
-            includeAbsolute: true,
-          }
-        }
+        const assetUrlOptions = resolveAssetUrlOptions(id, options.value)
 
         const compileResult = compiler.compileSync(code, {
           id,
@@ -405,18 +401,16 @@ export const plugin = createUnplugin<Options | undefined, false>(
         const { query } = parseVueRequest(id)
 
         if (query.type === 'style') {
-          return {
-            code,
-          }
+          return { code }
         }
 
         const output = []
 
         if (compileResult.styles.length) {
-          for (let i = 0; i < compileResult.styles.length; i++) {
-            const styleVirtualId = `${id}?vue&type=style&index=${i}&isScoped=${compileResult.styles[i].isScoped}&lang.${compileResult.styles[i].lang}`
+          compileResult.styles.forEach((style, i) => {
+            const styleVirtualId = `${id}?vue&type=style&index=${i}&isScoped=${style.isScoped}&lang.${style.lang}`
             output.push(`import "${styleVirtualId}";`)
-          }
+          })
         }
 
         if (!options.value.isProduction) {
@@ -437,25 +431,21 @@ export const plugin = createUnplugin<Options | undefined, false>(
           `)
         }
 
+        // 处理组件代码
         const modifiedCode = compileResult.code.replace(
           'export default',
-          `
-          const __comp =
-          `,
+          `\nconst __comp =`,
         )
 
-        output.push(modifiedCode)
-
-        // The role of hmrId
-        // TODO track current component instance hmrID
-        // TODO right hmr update with hmrId
-        // TODO hmrId Maintain component status
-        output.push(`
+        output.push(
+          modifiedCode,
+          `
         __comp.__hmrId = ${JSON.stringify(id)}
         typeof __VUE_HMR_RUNTIME__ !== 'undefined' && __VUE_HMR_RUNTIME__.createRecord(__comp.__hmrId, __comp)
 
         export default __comp
-          `)
+        `,
+        )
 
         return output.join('\n')
       },
