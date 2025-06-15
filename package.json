@@ -1,6 +1,6 @@
 {
   "name": "unplugin-vue-fervid",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "packageManager": "pnpm@9.15.1",
   "description": "Transform Vue 3 SFC to JavaScript written in Rust.",
   "type": "module",
@@ -85,7 +85,7 @@
     "vue": "^3.2.25"
   },
   "dependencies": {
-    "@fervid/napi": "/Users/adny/rust/fervid/crates/fervid_napi",
+    "@fervid/napi": "0.4.1",
     "@vue/reactivity": "^3.5.13",
     "debug": "^4.4.0",
     "unplugin": "^2.1.2",
