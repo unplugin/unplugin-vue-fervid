@@ -97,7 +97,7 @@
     "@jridgewell/trace-mapping": "^0.3.25",
     "@sxzz/eslint-config": "^4.5.1",
     "@sxzz/prettier-config": "^2.0.2",
-    "@sxzz/test-utils": "^0.3.11",
+    "@sxzz/test-utils": "^0.5.0",
     "@types/debug": "^4.1.12",
     "@types/node": "^22.10.2",
     "@vitejs/plugin-vue": "^5.2.1",
