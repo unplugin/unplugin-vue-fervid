@@ -363,12 +363,12 @@ export const plugin = createUnplugin<Options | undefined, false>(
         return query.vue || isVueFile(id)
       },
 
-      load(id) {
+      async load(id) {
         const { query } = parseVueRequest(id)
         if (query.vue) {
           const cleanedId = cleanId(id)
           const code = fs.readFileSync(cleanedId, 'utf-8')
-          const compileResult = compiler.compileSync(code, {
+          const compileResult = await compiler.compileAsync(code, {
             id: cleanedId,
             filename: cleanedId,
           })

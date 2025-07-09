@@ -5,7 +5,7 @@ import HelloWorld from './components/HelloWorld.vue'
 <template>
   <div>
     <el-button>Default</el-button>
-    <el-button type="primary">Primary</el-button>
+    <el-button type="primary">2222343434343242334234</el-button>
     <el-button type="success">Success</el-button>
     <el-button type="info">Info</el-button>
     <el-button type="warning">Warning</el-button>
