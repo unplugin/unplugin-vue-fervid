@@ -41,10 +41,10 @@ importers:
         version: 4.5.1(@types/eslint@9.6.1)(@typescript-eslint/eslint-plugin@8.18.2(@typescript-eslint/parser@8.18.2(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2))(eslint@9.17.0(jiti@2.4.2))(typescript@5.7.2)
       '@sxzz/prettier-config':
         specifier: ^2.0.2
-        version: 2.0.2
+        version: 2.4.0(prettier@3.4.2)
       '@sxzz/test-utils':
         specifier: ^0.3.11
-        version: 0.3.11(esbuild@0.24.2)(rolldown@0.15.1)(rollup@4.29.1)(vitest@3.0.4(@types/debug@4.1.12)(@types/node@22.13.1)(@vitest/ui@3.0.4)(jiti@2.4.2)(lightningcss@1.30.1)(sass@1.83.0)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1))
+        version: 0.3.11(esbuild@0.24.2)(rolldown@0.15.1)(rollup@4.29.1)(vitest@3.0.4)
       '@types/debug':
         specifier: ^4.1.12
         version: 4.1.12
@@ -224,25 +224,25 @@ importers:
         version: 1.10.2
       '@types/webpack':
         specifier: ^5.28.5
-        version: 5.28.5(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1(webpack-dev-server@5.2.0)(webpack@5.97.1))
+        version: 5.28.5(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)
       css-loader:
         specifier: ^7.1.2
-        version: 7.1.2(@rspack/core@1.1.8)(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1))
+        version: 7.1.2(@rspack/core@1.1.8)(webpack@5.97.1)
       html-webpack-plugin:
         specifier: ^5.6.3
-        version: 5.6.3(@rspack/core@1.1.8)(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1))
+        version: 5.6.3(@rspack/core@1.1.8)(webpack@5.97.1)
       serve:
         specifier: ^14.2.4
         version: 14.2.4
       style-loader:
         specifier: ^4.0.0
-        version: 4.0.0(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1))
+        version: 4.0.0(webpack@5.97.1)
       sucrase:
         specifier: ^3.35.0
         version: 3.35.0
       swc-loader:
         specifier: ^0.2.6
-        version: 0.2.6(@swc/core@1.10.2)(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1))
+        version: 0.2.6(@swc/core@1.10.2)(webpack@5.97.1)
       unplugin-vue-fervid:
         specifier: workspace:*
         version: link:../..
@@ -936,6 +936,10 @@ packages:
   '@polka/url@1.0.0-next.28':
     resolution: {integrity: sha512-8LduaNlMZGwdZ6qWrKlfa+2M4gahzFkprZiAt2TF8uS0qQgBizKXpXURqvTJ4WtmupWxaLqjRb2UCTe72mu+Aw==}
 
+  '@prettier/plugin-yuku@0.0.3':
+    resolution: {integrity: sha512-ViS5pgw2r19SMhniU83o9Eby+3cy7YfOfyEvfihT0OqB/GrlHJVBTK3U5bfasJ+tWxvZs8gnpbUGjni3cL57xQ==}
+    engines: {node: '>=14'}
+
   '@rolldown/binding-darwin-arm64@0.15.1':
     resolution: {integrity: sha512-eHszEW3Tpf2MNCOB3Qq+ypXBJl5MY+QNmb32AfUkcjGLtS6A84CkzjLLRBCIAJJ07WR0dD2EbOEjFXyp9JpdxA==}
     cpu: [arm64]
@@ -1411,11 +1415,17 @@ packages:
     peerDependencies:
       eslint: ^9.5.0
 
-  '@sxzz/popperjs-es@2.11.7':
-    resolution: {integrity: sha512-Ccy0NlLkzr0Ex2FKvh2X+OyERHXJ88XJ1MXtsI9y9fGexlaXaVTPzBCRBwIxFkORuOb+uBqeu+RqnpgYTEZRUQ==}
+  '@sxzz/popperjs-es@2.11.8':
+    resolution: {integrity: sha512-wOwESXvvED3S8xBmcPWHs2dUuzrE4XiZeFu7e1hROIJkm02a49N120pmOXxY33sBb6hArItm5W5tcg1cBtV+HQ==}
 
-  '@sxzz/prettier-config@2.0.2':
-    resolution: {integrity: sha512-yBKxaIr6WqgHTaLgX0g6gxNuMllkwR1QGeXynfJGmyD+XrZqO96t9xT5Mfbr9H3+N56SXY9/yFvP/e8lcJI7KA==}
+  '@sxzz/prettier-config@2.4.0':
+    resolution: {integrity: sha512-82p44hsMbXDdxzPMxLIlvBn7Evna+/dkTnTrIYhDRsKFZmrU/fzfb7B0W+n0p8ClHHnvqyeK84yXbs2vRNG2yw==}
+    peerDependencies:
+      prettier: ^3.8.0
+      prettier-plugin-astro: ^0.14.1
+    peerDependenciesMeta:
+      prettier-plugin-astro:
+        optional: true
 
   '@sxzz/test-utils@0.3.11':
     resolution: {integrity: sha512-nadGqNFtl1LbbnZaEATmSJiyCF+mO4djA5ZMgTA1qlU4fVAVsR537Q2zrQx/7VjarDtXya52Ipd+T1dgKvuFkg==}
@@ -1778,6 +1788,36 @@ packages:
 
   '@xtuc/long@4.2.2':
     resolution: {integrity: sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==}
+
+  '@yuku-toolchain/darwin-arm64@0.28.0':
+    resolution: {integrity: sha512-ub1u+JMRrLcuDMN2VofXS1GMau5Irl/HKj8raDUN6hYihe/Ed7IVpT9ycqs7vWxQx1j4BPyXr+UOV3gVXVFooA==}
+    cpu: [arm64]
+    os: [darwin]
+
+  '@yuku-toolchain/darwin-x64@0.28.0':
+    resolution: {integrity: sha512-S3XmN4T7nXBUdBAvIM/7/O1LpNXFg0E/9iaZO4S2fZrlxeYuvOKcgI9y6i0/2ddsWMJvMZ51cuxFTeesvRC41A==}
+    cpu: [x64]
+    os: [darwin]
+
+  '@yuku-toolchain/linux-arm64@0.28.0':
+    resolution: {integrity: sha512-kIK5JcpiGGBFZlLKuvjVmzqOmnCYSFXa1P8Vl+gZN6B+3G/1rTusBJqyMjKMNuXyMb+AYac6roGRpbcGH/LFUw==}
+    cpu: [arm64]
+    os: [linux]
+
+  '@yuku-toolchain/linux-x64@0.28.0':
+    resolution: {integrity: sha512-yCz0KECLdtk8G7VCwzYlC0xi70W29oB65oRUW7MA+lvaNEHkhK+ZLZzCveVkl3BVpLpkyBrznODX8UdbVBmpCg==}
+    cpu: [x64]
+    os: [linux]
+
+  '@yuku-toolchain/win32-arm64@0.28.0':
+    resolution: {integrity: sha512-d6M/3YJ/vJNQP32Yw/58KaVtp1D9nmP4C3C8HSTdhjiVTSmVQ4UX0+QT/iftH4G7VLGVZeI8wo5QhLF4rC2jgw==}
+    cpu: [arm64]
+    os: [win32]
+
+  '@yuku-toolchain/win32-x64@0.28.0':
+    resolution: {integrity: sha512-aJ4h8oy9jYtfjh5hXXuIBrDvnkXfPUlKhxFumAArkK9TrnDAXo3Ixk3/S6xmjnPkkqobS7NyDLcSC/HZb2gjOg==}
+    cpu: [x64]
+    os: [win32]
 
   '@zeit/schemas@2.36.0':
     resolution: {integrity: sha512-7kjMwcChYEzMKjeex9ZFXkt1AyNov9R5HZtjBKVsmVpw7pa7ZtlCGvCBC2vnnXctaYN+aRI61HjIqeetZW5ROg==}
@@ -2580,6 +2620,7 @@ packages:
   eslint@9.17.0:
     resolution: {integrity: sha512-evtlNcpJg+cZLcnVKwsai8fExnqjGPicK7gnUtlNuzu+Fv9bI0aLpND5T44VLQtoMEnI57LoXO9XAkIXwohKrA==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
     peerDependencies:
       jiti: '*'
@@ -2809,11 +2850,13 @@ packages:
 
   glob@10.4.5:
     resolution: {integrity: sha512-7Bv8RF0k6xjo7d4A/PxYLbUCfb6c+Vpd2/mB2yRDlew7Jb5hEXiCD9ibfO7wpk8i4sevK6DFny9h7EYbM3/sHg==}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   glob@11.0.0:
     resolution: {integrity: sha512-9UiX/Bl6J2yaBbxKoEBRm4Cipxgok8kQYcOPEhScPwebu2I0HoQOuYdIO6S3hLuWoZgpDpwQZMzTFxgpkyT76g==}
     engines: {node: 20 || >=22}
+    deprecated: Old versions of glob are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
     hasBin: true
 
   globals@13.24.0:
@@ -4013,6 +4056,7 @@ packages:
   rolldown-vite@6.3.18:
     resolution: {integrity: sha512-c1D5JZa82T5HDWTz11ZBm86hvOBejSP1Y9SSzol7HyNQ+rDx88MPbVlbI1gGJaYYLr3rxaJIfNJnSEQBcZXSbA==}
     engines: {node: ^18.0.0 || ^20.0.0 || >=22.0.0}
+    deprecated: Use 7.3.1 for migration purposes. For the most recent updates, migrate to Vite 8 once you're ready.
     hasBin: true
     peerDependencies:
       '@types/node': ^18.0.0 || ^20.0.0 || >=22.0.0
@@ -4235,6 +4279,7 @@ packages:
   source-map@0.8.0-beta.0:
     resolution: {integrity: sha512-2ymg6oRBpebeZi9UUNsgQ89bhx01TcTkmNTGnNO88imTmbSgy4nfujrgVEFKWpMTEGA11EDkTt7mqObTPdigIA==}
     engines: {node: '>= 8'}
+    deprecated: The work that was done in this beta branch won't be included in future versions
 
   spdx-correct@3.2.0:
     resolution: {integrity: sha512-kN9dJbvnySHULIluDHy32WHRUu3Og7B9sbY7tsFLctQkIqnMh3hErYgdMjTYuqmcXX+lK5T1lnUt3G7zNswmZA==}
@@ -4361,6 +4406,7 @@ packages:
   tar@6.2.1:
     resolution: {integrity: sha512-DZ4yORTwrbTj/7MZYq2w+/ZFdI6OZ/f9SFHR+71gIVUZhOQPHzVCLpvRnPgyaMpfWxxk/4ONva3GQSyNIKRv6A==}
     engines: {node: '>=10'}
+    deprecated: Old versions of tar are not supported, and contain widely publicized security vulnerabilities, which have been fixed in the current version. Please update. Support for old versions may be purchased (at exorbitant rates) by contacting i@izs.me
 
   terser-webpack-plugin@5.3.11:
     resolution: {integrity: sha512-RVCsMfuD0+cTt3EwX8hSl2Ks56EbFHWmhluwcqoPKtBnfjiT6olaq7PRIRfhyU8nnC2MrnDrBLfrD/RGE+cVXQ==}
@@ -4605,6 +4651,7 @@ packages:
 
   uuid@8.3.2:
     resolution: {integrity: sha512-+NYs2QeMWy+GWFOEm9xnn6HCDp0l7QBD7ml8zLUmJ+93Q5NF0NocErnwkTkXVFNiX3/fpC6afS8Dhb/gz7R7eg==}
+    deprecated: uuid@10 and below is no longer supported.  For ESM codebases, update to uuid@latest.  For CommonJS codebases, use uuid@11 (but be aware this version will likely be deprecated in 2028).
     hasBin: true
 
   v8-compile-cache-lib@3.0.1:
@@ -4909,6 +4956,15 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  yuku@0.28.0:
+    resolution: {integrity: sha512-vzuml0lBwq8gYUujhLZn9AZwgPG1yPF1081ceOkTnEIM9bwgRnFUGAW5x2hTLC+qGI/iqu9PLs5Jko6rUn7YDA==}
+    engines: {node: '>=16.4.0'}
+    peerDependencies:
+      '@yuku-toolchain/wasm': 0.28.0
+    peerDependenciesMeta:
+      '@yuku-toolchain/wasm':
+        optional: true
 
   zod@3.24.1:
     resolution: {integrity: sha512-muH7gBL9sI1nciMZV67X5fTKKBLtwpZ5VBp1vsOQzj1MhrBZ4wlVCm3gedKZWLp0Oyel8sIGfeiz54Su+OVT+A==}
@@ -5430,6 +5486,12 @@ snapshots:
 
   '@polka/url@1.0.0-next.28': {}
 
+  '@prettier/plugin-yuku@0.0.3':
+    dependencies:
+      yuku: 0.28.0
+    transitivePeerDependencies:
+      - '@yuku-toolchain/wasm'
+
   '@rolldown/binding-darwin-arm64@0.15.1':
     optional: true
 
@@ -5817,11 +5879,16 @@ snapshots:
       - supports-color
       - typescript
 
-  '@sxzz/popperjs-es@2.11.7': {}
+  '@sxzz/popperjs-es@2.11.8': {}
 
-  '@sxzz/prettier-config@2.0.2': {}
+  '@sxzz/prettier-config@2.4.0(prettier@3.4.2)':
+    dependencies:
+      '@prettier/plugin-yuku': 0.0.3
+      prettier: 3.4.2
+    transitivePeerDependencies:
+      - '@yuku-toolchain/wasm'
 
-  '@sxzz/test-utils@0.3.11(esbuild@0.24.2)(rolldown@0.15.1)(rollup@4.29.1)(vitest@3.0.4(@types/debug@4.1.12)(@types/node@22.13.1)(@vitest/ui@3.0.4)(jiti@2.4.2)(lightningcss@1.30.1)(sass@1.83.0)(terser@5.37.0)(tsx@4.19.2)(yaml@2.6.1))':
+  '@sxzz/test-utils@0.3.11(esbuild@0.24.2)(rolldown@0.15.1)(rollup@4.29.1)(vitest@3.0.4)':
     dependencies:
       '@rollup/pluginutils': 5.1.4(rollup@4.29.1)
       tinyglobby: 0.2.10
@@ -5970,7 +6037,7 @@ snapshots:
 
   '@types/web-bluetooth@0.0.16': {}
 
-  '@types/webpack@5.28.5(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1(webpack-dev-server@5.2.0)(webpack@5.97.1))':
+  '@types/webpack@5.28.5(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)':
     dependencies:
       '@types/node': 22.10.2
       tapable: 2.2.1
@@ -6293,17 +6360,17 @@ snapshots:
       '@webassemblyjs/ast': 1.14.1
       '@xtuc/long': 4.2.2
 
-  '@webpack-cli/configtest@3.0.1(webpack-cli@6.0.1(webpack-dev-server@5.2.0)(webpack@5.97.1))(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1))':
+  '@webpack-cli/configtest@3.0.1(webpack-cli@6.0.1)(webpack@5.97.1)':
     dependencies:
       webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)
       webpack-cli: 6.0.1(webpack-dev-server@5.2.0)(webpack@5.97.1)
 
-  '@webpack-cli/info@3.0.1(webpack-cli@6.0.1(webpack-dev-server@5.2.0)(webpack@5.97.1))(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1))':
+  '@webpack-cli/info@3.0.1(webpack-cli@6.0.1)(webpack@5.97.1)':
     dependencies:
       webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)
       webpack-cli: 6.0.1(webpack-dev-server@5.2.0)(webpack@5.97.1)
 
-  '@webpack-cli/serve@3.0.1(webpack-cli@6.0.1(webpack-dev-server@5.2.0)(webpack@5.97.1))(webpack-dev-server@5.2.0(debug@4.4.0)(webpack-cli@6.0.1)(webpack@5.97.1))(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1))':
+  '@webpack-cli/serve@3.0.1(webpack-cli@6.0.1)(webpack-dev-server@5.2.0)(webpack@5.97.1)':
     dependencies:
       webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)
       webpack-cli: 6.0.1(webpack-dev-server@5.2.0)(webpack@5.97.1)
@@ -6313,6 +6380,24 @@ snapshots:
   '@xtuc/ieee754@1.2.0': {}
 
   '@xtuc/long@4.2.2': {}
+
+  '@yuku-toolchain/darwin-arm64@0.28.0':
+    optional: true
+
+  '@yuku-toolchain/darwin-x64@0.28.0':
+    optional: true
+
+  '@yuku-toolchain/linux-arm64@0.28.0':
+    optional: true
+
+  '@yuku-toolchain/linux-x64@0.28.0':
+    optional: true
+
+  '@yuku-toolchain/win32-arm64@0.28.0':
+    optional: true
+
+  '@yuku-toolchain/win32-x64@0.28.0':
+    optional: true
 
   '@zeit/schemas@2.36.0': {}
 
@@ -6703,20 +6788,6 @@ snapshots:
       shebang-command: 2.0.0
       which: 2.0.2
 
-  css-loader@7.1.2(@rspack/core@1.1.8)(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)):
-    dependencies:
-      icss-utils: 5.1.0(postcss@8.4.49)
-      postcss: 8.4.49
-      postcss-modules-extract-imports: 3.1.0(postcss@8.4.49)
-      postcss-modules-local-by-default: 4.2.0(postcss@8.4.49)
-      postcss-modules-scope: 3.2.1(postcss@8.4.49)
-      postcss-modules-values: 4.0.0(postcss@8.4.49)
-      postcss-value-parser: 4.2.0
-      semver: 7.6.3
-    optionalDependencies:
-      '@rspack/core': 1.1.8
-      webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)
-
   css-loader@7.1.2(@rspack/core@1.1.8)(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)):
     dependencies:
       icss-utils: 5.1.0(postcss@8.4.49)
@@ -6730,6 +6801,20 @@ snapshots:
     optionalDependencies:
       '@rspack/core': 1.1.8
       webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)
+
+  css-loader@7.1.2(@rspack/core@1.1.8)(webpack@5.97.1):
+    dependencies:
+      icss-utils: 5.1.0(postcss@8.4.49)
+      postcss: 8.4.49
+      postcss-modules-extract-imports: 3.1.0(postcss@8.4.49)
+      postcss-modules-local-by-default: 4.2.0(postcss@8.4.49)
+      postcss-modules-scope: 3.2.1(postcss@8.4.49)
+      postcss-modules-values: 4.0.0(postcss@8.4.49)
+      postcss-value-parser: 4.2.0
+      semver: 7.6.3
+    optionalDependencies:
+      '@rspack/core': 1.1.8
+      webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)
 
   css-select@4.3.0:
     dependencies:
@@ -6862,7 +6947,7 @@ snapshots:
       '@ctrl/tinycolor': 3.6.1
       '@element-plus/icons-vue': 2.3.1(vue@3.5.13(typescript@5.7.2))
       '@floating-ui/dom': 1.7.1
-      '@popperjs/core': '@sxzz/popperjs-es@2.11.7'
+      '@popperjs/core': '@sxzz/popperjs-es@2.11.8'
       '@types/lodash': 4.17.17
       '@types/lodash-es': 4.17.12
       '@vueuse/core': 9.13.0(vue@3.5.13(typescript@5.7.2))
@@ -7560,7 +7645,7 @@ snapshots:
       relateurl: 0.2.7
       terser: 5.37.0
 
-  html-webpack-plugin@5.6.3(@rspack/core@1.1.8)(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)):
+  html-webpack-plugin@5.6.3(@rspack/core@1.1.8)(webpack@5.97.1):
     dependencies:
       '@types/html-minifier-terser': 6.1.0
       html-minifier-terser: 6.1.0
@@ -9159,13 +9244,13 @@ snapshots:
 
   strip-json-comments@3.1.1: {}
 
-  style-loader@4.0.0(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)):
-    dependencies:
-      webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)
-
   style-loader@4.0.0(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)):
     dependencies:
       webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)
+
+  style-loader@4.0.0(webpack@5.97.1):
+    dependencies:
+      webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)
 
   sucrase@3.35.0:
     dependencies:
@@ -9187,7 +9272,7 @@ snapshots:
 
   supports-preserve-symlinks-flag@1.0.0: {}
 
-  swc-loader@0.2.6(@swc/core@1.10.2)(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)):
+  swc-loader@0.2.6(@swc/core@1.10.2)(webpack@5.97.1):
     dependencies:
       '@swc/core': 1.10.2
       '@swc/counter': 0.1.3
@@ -9213,18 +9298,6 @@ snapshots:
       mkdirp: 1.0.4
       yallist: 4.0.0
 
-  terser-webpack-plugin@5.3.11(@swc/core@1.10.2)(esbuild@0.24.2)(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)):
-    dependencies:
-      '@jridgewell/trace-mapping': 0.3.25
-      jest-worker: 27.5.1
-      schema-utils: 4.3.0
-      serialize-javascript: 6.0.2
-      terser: 5.37.0
-      webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)
-    optionalDependencies:
-      '@swc/core': 1.10.2
-      esbuild: 0.24.2
-
   terser-webpack-plugin@5.3.11(@swc/core@1.10.2)(esbuild@0.24.2)(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)):
     dependencies:
       '@jridgewell/trace-mapping': 0.3.25
@@ -9233,6 +9306,18 @@ snapshots:
       serialize-javascript: 6.0.2
       terser: 5.37.0
       webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)
+    optionalDependencies:
+      '@swc/core': 1.10.2
+      esbuild: 0.24.2
+
+  terser-webpack-plugin@5.3.11(@swc/core@1.10.2)(esbuild@0.24.2)(webpack@5.97.1):
+    dependencies:
+      '@jridgewell/trace-mapping': 0.3.25
+      jest-worker: 27.5.1
+      schema-utils: 4.3.0
+      serialize-javascript: 6.0.2
+      terser: 5.37.0
+      webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)
     optionalDependencies:
       '@swc/core': 1.10.2
       esbuild: 0.24.2
@@ -9625,9 +9710,9 @@ snapshots:
   webpack-cli@6.0.1(webpack-dev-server@5.2.0)(webpack@5.97.1):
     dependencies:
       '@discoveryjs/json-ext': 0.6.3
-      '@webpack-cli/configtest': 3.0.1(webpack-cli@6.0.1(webpack-dev-server@5.2.0)(webpack@5.97.1))(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1))
-      '@webpack-cli/info': 3.0.1(webpack-cli@6.0.1(webpack-dev-server@5.2.0)(webpack@5.97.1))(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1))
-      '@webpack-cli/serve': 3.0.1(webpack-cli@6.0.1(webpack-dev-server@5.2.0)(webpack@5.97.1))(webpack-dev-server@5.2.0(debug@4.4.0)(webpack-cli@6.0.1)(webpack@5.97.1))(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1))
+      '@webpack-cli/configtest': 3.0.1(webpack-cli@6.0.1)(webpack@5.97.1)
+      '@webpack-cli/info': 3.0.1(webpack-cli@6.0.1)(webpack@5.97.1)
+      '@webpack-cli/serve': 3.0.1(webpack-cli@6.0.1)(webpack-dev-server@5.2.0)(webpack@5.97.1)
       colorette: 2.0.20
       commander: 12.1.0
       cross-spawn: 7.0.6
@@ -9641,17 +9726,6 @@ snapshots:
     optionalDependencies:
       webpack-dev-server: 5.2.0(debug@4.4.0)(webpack-cli@6.0.1)(webpack@5.97.1)
 
-  webpack-dev-middleware@7.4.2(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)):
-    dependencies:
-      colorette: 2.0.20
-      memfs: 4.15.1
-      mime-types: 2.1.35
-      on-finished: 2.4.1
-      range-parser: 1.2.1
-      schema-utils: 4.3.0
-    optionalDependencies:
-      webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)
-
   webpack-dev-middleware@7.4.2(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)):
     dependencies:
       colorette: 2.0.20
@@ -9662,6 +9736,17 @@ snapshots:
       schema-utils: 4.3.0
     optionalDependencies:
       webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)
+
+  webpack-dev-middleware@7.4.2(webpack@5.97.1):
+    dependencies:
+      colorette: 2.0.20
+      memfs: 4.15.1
+      mime-types: 2.1.35
+      on-finished: 2.4.1
+      range-parser: 1.2.1
+      schema-utils: 4.3.0
+    optionalDependencies:
+      webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)
 
   webpack-dev-server@5.0.4(debug@4.4.0)(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)):
     dependencies:
@@ -9730,7 +9815,7 @@ snapshots:
       serve-index: 1.9.1
       sockjs: 0.3.24
       spdy: 4.0.2
-      webpack-dev-middleware: 7.4.2(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1))
+      webpack-dev-middleware: 7.4.2(webpack@5.97.1)
       ws: 8.18.0
     optionalDependencies:
       webpack: 5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1)
@@ -9803,7 +9888,7 @@ snapshots:
       neo-async: 2.6.2
       schema-utils: 3.3.0
       tapable: 2.2.1
-      terser-webpack-plugin: 5.3.11(@swc/core@1.10.2)(esbuild@0.24.2)(webpack@5.97.1(@swc/core@1.10.2)(esbuild@0.24.2)(webpack-cli@6.0.1))
+      terser-webpack-plugin: 5.3.11(@swc/core@1.10.2)(esbuild@0.24.2)(webpack@5.97.1)
       watchpack: 2.4.2
       webpack-sources: 3.2.3
     optionalDependencies:
@@ -9889,6 +9974,15 @@ snapshots:
   yn@3.1.1: {}
 
   yocto-queue@0.1.0: {}
+
+  yuku@0.28.0:
+    optionalDependencies:
+      '@yuku-toolchain/darwin-arm64': 0.28.0
+      '@yuku-toolchain/darwin-x64': 0.28.0
+      '@yuku-toolchain/linux-arm64': 0.28.0
+      '@yuku-toolchain/linux-x64': 0.28.0
+      '@yuku-toolchain/win32-arm64': 0.28.0
+      '@yuku-toolchain/win32-x64': 0.28.0
 
   zod@3.24.1: {}
 
